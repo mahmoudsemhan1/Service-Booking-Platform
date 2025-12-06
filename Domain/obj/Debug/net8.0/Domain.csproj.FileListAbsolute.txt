@@ -1,0 +1,12 @@
+H:\MyProjects\Service Booking Platform\Domain\bin\Debug\net8.0\Domain.deps.json
+H:\MyProjects\Service Booking Platform\Domain\bin\Debug\net8.0\Domain.dll
+H:\MyProjects\Service Booking Platform\Domain\bin\Debug\net8.0\Domain.pdb
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.csproj.AssemblyReference.cache
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.dll
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\refint\Domain.dll
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.pdb
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\ref\Domain.dll
