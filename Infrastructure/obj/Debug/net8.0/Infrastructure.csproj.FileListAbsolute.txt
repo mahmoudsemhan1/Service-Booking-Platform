@@ -17,3 +17,4 @@ H:\MyProjects\Service Booking Platform\Infrastructure\obj\Debug\net8.0\refint\In
 H:\MyProjects\Service Booking Platform\Infrastructure\obj\Debug\net8.0\Infrastructure.pdb
 H:\MyProjects\Service Booking Platform\Infrastructure\obj\Debug\net8.0\Infrastructure.genruntimeconfig.cache
 H:\MyProjects\Service Booking Platform\Infrastructure\obj\Debug\net8.0\ref\Infrastructure.dll
+H:\MyProjects\Service Booking Platform\Infrastructure\obj\Debug\net8.0\Infrastructure.sourcelink.json

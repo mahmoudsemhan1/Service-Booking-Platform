@@ -13,3 +13,4 @@ H:\MyProjects\Service Booking Platform\Application\obj\Debug\net8.0\Application.
 H:\MyProjects\Service Booking Platform\Application\obj\Debug\net8.0\refint\Application.dll
 H:\MyProjects\Service Booking Platform\Application\obj\Debug\net8.0\Application.pdb
 H:\MyProjects\Service Booking Platform\Application\obj\Debug\net8.0\ref\Application.dll
+H:\MyProjects\Service Booking Platform\Application\obj\Debug\net8.0\Application.sourcelink.json

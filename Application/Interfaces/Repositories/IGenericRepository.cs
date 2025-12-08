@@ -15,7 +15,7 @@ namespace Application.Interfaces.Repositories
 
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(T entity);
 
         Task<bool> ExistsAsync(int id);
 

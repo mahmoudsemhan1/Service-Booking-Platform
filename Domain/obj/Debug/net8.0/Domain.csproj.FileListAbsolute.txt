@@ -10,3 +10,4 @@ H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.dll
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\refint\Domain.dll
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.pdb
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\ref\Domain.dll
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.sourcelink.json
