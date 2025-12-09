@@ -29,7 +29,6 @@ H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
-H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.Identity.Client.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.Identity.Client.Extensions.Msal.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
@@ -47,7 +46,6 @@ H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\System.ClientModel.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
-H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\System.Memory.Data.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\System.Runtime.Caching.dll

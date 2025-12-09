@@ -1,4 +1,11 @@
+using Application.Interfaces.Services.BookingService;
+using Application.Interfaces.Services.Implement;
+using Application.Mappings;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.UnitofWork;
 using Infrastructure.Data;
+using Infrastructure.Repositories;
+using Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -14,6 +21,13 @@ builder.Services.AddSwaggerGen();
 //
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+builder.Services.AddScoped<IUnitofWork, UnitOfwork>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

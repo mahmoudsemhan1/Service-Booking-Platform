@@ -11,8 +11,6 @@ namespace Domain.Models
     public class Booking:AuditableEntity
     {
         public int Id { get; set; }
-
-
         public int ServiceId { get; set; }
         public Service? Service { get; set; }
 
