@@ -11,9 +11,8 @@ namespace Domain.Models
     {
         public int Id { get; set; }
 
-        // FK to Domain User
+        // FK to Domain User=
         public string UserId { get; set; } = null!;
-        public User User { get; set; } = null!;
 
         public string BusinessName { get; set; } = null!;
         public string? Address { get; set; }

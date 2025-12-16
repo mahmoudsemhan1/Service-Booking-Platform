@@ -1,6 +1,6 @@
 using Application.Interfaces.Services.BookingService;
 using Application.Interfaces.Services.Implement;
-using Application.Mappings;
+ using Application.Mappings;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.UnitofWork;
 using Infrastructure.Data;
@@ -25,6 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitofWork, UnitOfwork>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+ 
 
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

@@ -13,17 +13,11 @@ namespace Application.DTOs.Booking
         public int ServiceId { get; set; }
 
         [Required]
-        public string UserId { get; set; } = null!;
-
-        [Required]
         public int ProviderId { get; set; }
 
         [Required]
         public DateTime BookingDate { get; set; }
 
         public TimeSpan? BookingTime { get; set; }
-
-        [Required]
-        public decimal TotalPrice { get; set; }
     }
 }

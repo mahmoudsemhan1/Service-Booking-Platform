@@ -10,15 +10,17 @@ namespace Domain.Interfaces.UnitofWork
 {
     public interface IUnitofWork : IDisposable
     {
-        IGenericRepository<User> Users { get; }
-        IGenericRepository<Provider> Providers { get; }
+         IGenericRepository<Provider> Providers { get; }
         IGenericRepository<Service> Services { get; }
-        IGenericRepository<Booking> Bookings { get; }
-        IGenericRepository<Payment> Payments { get; }
+         IGenericRepository<Payment> Payments { get; }
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
 
-        Task<int> SaveAsync();
+        IBookingRepository Bookings { get; }
+
+
+        Task<int> CompleteAsync();
+
 
         
     }

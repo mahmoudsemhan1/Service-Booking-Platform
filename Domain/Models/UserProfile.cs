@@ -9,16 +9,13 @@ namespace Domain.Models
 {
     public class UserProfile: AuditableEntity
     {
-        public int Id { get; set; }
+        public int  Id { get; set; } 
 
-
-        // FK to Domain User
-        public string UserId { get; set; } = null!;
-        public User User { get; set; } = null!;
-
-
+        public string UserId { get; set; } = null!; //FK =>Applicationuser 
         public string? Bio { get; set; }
         public string? PhotoPath { get; set; }
- 
+
+        
+
     }
 }

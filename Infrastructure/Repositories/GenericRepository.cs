@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces.Repositories;
+using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -57,6 +58,10 @@ namespace Infrastructure.Repositories
         {
            return await _dbSet.Where(predicate).ToListAsync();
          }
+        public async Task<T?> FindOneAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
 
 
     }

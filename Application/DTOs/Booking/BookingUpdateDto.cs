@@ -11,7 +11,6 @@ namespace Application.DTOs.Booking
     {
         public DateTime? BookingDate { get; set; }
         public TimeSpan? BookingTime { get; set; }
-        public BookingStatus? Status { get; set; }
-        public decimal? TotalPrice { get; set; }
+       
     }
 }

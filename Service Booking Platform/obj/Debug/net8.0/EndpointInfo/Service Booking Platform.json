@@ -129,6 +129,75 @@
           }
         }
       }
+    },
+    "/api/Bookings/{id}/confirm": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bookings/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bookings/{id}/complete": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -137,19 +206,13 @@
         "required": [
           "bookingDate",
           "providerId",
-          "serviceId",
-          "totalPrice",
-          "userId"
+          "serviceId"
         ],
         "type": "object",
         "properties": {
           "serviceId": {
             "type": "integer",
             "format": "int32"
-          },
-          "userId": {
-            "minLength": 1,
-            "type": "string"
           },
           "providerId": {
             "type": "integer",
@@ -163,24 +226,9 @@
             "type": "string",
             "format": "date-span",
             "nullable": true
-          },
-          "totalPrice": {
-            "type": "number",
-            "format": "double"
           }
         },
         "additionalProperties": false
-      },
-      "BookingStatus": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ],
-        "type": "integer",
-        "format": "int32"
       },
       "BookingUpdateDto": {
         "type": "object",
@@ -193,14 +241,6 @@
           "bookingTime": {
             "type": "string",
             "format": "date-span",
-            "nullable": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/BookingStatus"
-          },
-          "totalPrice": {
-            "type": "number",
-            "format": "double",
             "nullable": true
           }
         },

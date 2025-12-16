@@ -328,31 +328,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("Domain.Models.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhotoPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
-                });
-
             modelBuilder.Entity("Domain.Models.UserProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -407,6 +382,10 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -430,11 +409,8 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ProfileId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProviderId")
-                        .HasColumnType("int");
+                    b.Property<string>("PhotoPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -455,10 +431,6 @@ namespace Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("ProfileId");
-
-                    b.HasIndex("ProviderId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -614,8 +586,8 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.User", "User")
-                        .WithMany("Bookings")
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -623,8 +595,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Provider");
 
                     b.Navigation("Service");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Models.Payment", b =>
@@ -638,26 +608,22 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("Domain.Models.Payment", "BookingId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Domain.Models.User", "User")
-                        .WithMany("Payments")
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Booking");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Models.Provider", b =>
                 {
-                    b.HasOne("Domain.Models.User", "User")
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
                         .WithOne("Provider")
                         .HasForeignKey("Domain.Models.Provider", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Models.ProviderService", b =>
@@ -687,41 +653,22 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.User", "User")
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Provider");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Models.UserProfile", b =>
                 {
-                    b.HasOne("Domain.Models.User", "User")
+                    b.HasOne("Infrastructure.Identity.ApplicationUser", null)
                         .WithOne("Profile")
                         .HasForeignKey("Domain.Models.UserProfile", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
-                {
-                    b.HasOne("Domain.Models.UserProfile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId");
-
-                    b.HasOne("Domain.Models.Provider", "Provider")
-                        .WithMany()
-                        .HasForeignKey("ProviderId");
-
-                    b.Navigation("Profile");
-
-                    b.Navigation("Provider");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -792,7 +739,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("ProviderServices");
                 });
 
-            modelBuilder.Entity("Domain.Models.User", b =>
+            modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("Bookings");
 
@@ -801,13 +748,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Profile");
 
                     b.Navigation("Provider");
-                });
-
-            modelBuilder.Entity("Infrastructure.Identity.ApplicationUser", b =>
-                {
-                    b.Navigation("Bookings");
-
-                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

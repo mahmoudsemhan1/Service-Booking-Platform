@@ -13,19 +13,23 @@ namespace Infrastructure.UnitOfWork
         {
             _context = context;
 
-            Users = new GenericRepository<User>(_context);
+            //Users = new GenericRepository<User>(_context);
             Providers = new GenericRepository<Provider>(_context);
             Services = new GenericRepository<Service>(_context);
-            Bookings = new GenericRepository<Booking>(_context);
-            Payments = new GenericRepository<Payment>(_context);
+             Payments = new GenericRepository<Payment>(_context);
             Reviews = new GenericRepository<Review>(_context);
             Images = new GenericRepository<Image>(_context);
+            //services
+            Bookings = new BookingRepository(_context);
         }
-        public IGenericRepository<User> Users { get; }
+
+        // services
+        public IBookingRepository Bookings { get; }
+
+        //public IGenericRepository<User> Users { get; }
         public IGenericRepository<Provider> Providers { get; }
         public IGenericRepository<Service> Services { get; }
-        public IGenericRepository<Booking> Bookings { get; }
-        public IGenericRepository<Payment> Payments { get; }
+         public IGenericRepository<Payment> Payments { get; }
         public IGenericRepository<Review> Reviews { get; }
         public IGenericRepository<Image> Images { get; }
 
@@ -34,7 +38,7 @@ namespace Infrastructure.UnitOfWork
             _context.Dispose();
         }
 
-        public async Task<int> SaveAsync()
+        public async Task<int> CompleteAsync()
         {
          return await  _context.SaveChangesAsync();
         }

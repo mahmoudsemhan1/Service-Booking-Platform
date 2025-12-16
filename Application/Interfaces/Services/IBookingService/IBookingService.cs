@@ -10,10 +10,17 @@ namespace Application.Interfaces.Services.BookingService
 {
     public interface IBookingService
     {
-        Task<BookingReadDto?> GetByIdAsync(int id);
-        Task<IEnumerable<BookingReadDto>> GetAllAsync();
-        Task<BookingCreateDto> CreateAsync(BookingCreateDto dto);
-        Task<BookingUpdateDto> UpdateAsync(int bookingId, BookingUpdateDto dto);
-        Task<bool> DeleteAsync(int id);
+        Task<bool> ConfirmAsync(int bookingId);
+        Task<bool> CancelAsync(int bookingId);
+        Task<bool> CompleteAsync(int bookingId);
+        Task<IEnumerable<BookingReadDto>> GetAllAsync(BookingFilterDto filter);
+
+
+        Task<BookingReadDto?> GetByIdAsync(int bookingId);
+        Task<BookingReadDto> CreateAsync(BookingCreateDto dto);
+        Task<BookingReadDto> UpdateAsync(int bookingId, BookingUpdateDto dto);
+        Task DeleteAsync(int bookingId);
+
+
     }
 }
