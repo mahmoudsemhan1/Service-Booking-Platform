@@ -15,7 +15,6 @@ namespace Application.Interfaces.Services.BookingService
         Task<bool> CompleteAsync(int bookingId);
         Task<IEnumerable<BookingReadDto>> GetAllAsync(BookingFilterDto filter);
 
-
         Task<BookingReadDto?> GetByIdAsync(int bookingId);
         Task<BookingReadDto> CreateAsync(BookingCreateDto dto);
         Task<BookingReadDto> UpdateAsync(int bookingId, BookingUpdateDto dto);

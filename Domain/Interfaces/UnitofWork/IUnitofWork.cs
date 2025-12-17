@@ -12,11 +12,11 @@ namespace Domain.Interfaces.UnitofWork
     {
          IGenericRepository<Provider> Providers { get; }
         IGenericRepository<Service> Services { get; }
-         IGenericRepository<Payment> Payments { get; }
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
 
         IBookingRepository Bookings { get; }
+        IPaymentRepository Payments { get; }
 
 
         Task<int> CompleteAsync();

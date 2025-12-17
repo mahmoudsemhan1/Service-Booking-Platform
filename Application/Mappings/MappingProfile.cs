@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.Booking;
-using Application.DTOs.Identity;
+using Application.DTOs.Payment;
 using AutoMapper;
 using Domain.Models;
 using Domain.Models.Enum;
@@ -20,26 +20,16 @@ namespace Application.Mappings
                        .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service != null ? src.Service.Title : null))
                        .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.Provider != null ? src.Provider.BusinessName : null));
 
-            CreateMap<BookingCreateDto, Booking>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => BookingStatus.Pending));
-
+            CreateMap<BookingCreateDto, Booking>();
             CreateMap<BookingUpdateDto, Booking>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+            // ===== Payment =====
 
-            //// User mappings
-            //CreateMap<ApplicationUser, UserReadDto>()
-            //    .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-            //    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName));
+            CreateMap<PaymentCreateDto, Payment>();
 
-            //CreateMap<UserCreateDto, ApplicationUser>()
-            //    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
-            //    .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Phone))
-            //    .ForMember(dest => dest.Id, opt => opt.Ignore()); // Ignore Id
+            CreateMap<Payment, PaymentReadDto>();
 
-            //CreateMap<AppUserUpdateDto, ApplicationUser>()
-            //    .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-            //    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

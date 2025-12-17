@@ -13,11 +13,39 @@ namespace Domain.Models
 
 
         public decimal Amount { get; set; }
-        public PaymentMethod Method { get; set; } = PaymentMethod.Unknown;
-        public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
-        public string? TransactionId { get; set; }
-        public string? RawResponse { get; set; }
+        public PaymentMethod Method { get; private set; } = PaymentMethod.Unknown;
+        public PaymentStatus Status { get; private set; } = PaymentStatus.Pending;
+        public string? TransactionId { get; private set; }
+        public string? RawResponse { get; private set; }
         public Booking? Booking { get; set; }
+
+
+        public void MarkAsPaid(string transactionId)
+        {
+            if (Status == PaymentStatus.Success) 
+                throw new InvalidOperationException("Payment already completed");
+
+            Status = PaymentStatus.Success;
+            TransactionId = transactionId;
+        }
+
+        public void MarkAsFailed(string? reason = null)
+        {
+            if (Status == PaymentStatus.Success)
+                throw new InvalidOperationException("Successful payment cannot be failed.");
+
+            Status = PaymentStatus.Failed;
+            RawResponse = reason;
+        }
+
+        public void Refund()
+        {
+            if (Status != PaymentStatus.Success)
+                throw new InvalidOperationException("Only successful payments can be refunded.");
+
+            Status = PaymentStatus.Refunded;
+        }
+
 
     }
 }
