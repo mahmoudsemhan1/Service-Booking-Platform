@@ -43,7 +43,7 @@ namespace Application.Interfaces.Services.Implement
             var payment= await _unitofWork.Payments.GetByTransactionIdAsync(dto.TransactionId);
             if(payment == null) return false;
 
-            payment.MarkAsPaid(dto.TransactionId);
+            payment.MarkAsSuccess(dto.TransactionId,dto.RawResponse);
             await _unitofWork.CompleteAsync();
             return true;
         }
@@ -64,7 +64,7 @@ namespace Application.Interfaces.Services.Implement
             var payment = await _unitofWork.Payments.GetByIdAsync(paymentId);
             if (payment == null) return false;
 
-            payment.MarkAsFailed();
+            payment.Refund();
             await _unitofWork.CompleteAsync();
             return true;
         }

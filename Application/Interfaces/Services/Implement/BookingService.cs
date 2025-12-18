@@ -26,8 +26,20 @@ namespace Application.Interfaces.Services.Implement
                 return false;
 
             booking.Confirm();
-            await _unitOfWork.Bookings.UpdateAsync(booking);
-            await _unitOfWork.CompleteAsync(); // حفظ التغييرات
+            var payment = new Payment
+                (
+               bookingId: booking.Id,
+               userId: booking.UserId,
+               amount: booking.TotalPrice,
+               method: PaymentMethod.Unknown 
+           );
+            await _unitOfWork.Payments.AddAsync(payment);
+            
+            //ربط payment بال booking
+            booking.PaymentId = payment.Id;
+            booking.Payment = payment;
+
+            await _unitOfWork.CompleteAsync(); 
 
 
             return true;
@@ -37,14 +49,15 @@ namespace Application.Interfaces.Services.Implement
         public async Task<bool> CancelAsync(int bookingId)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
-            if (booking == null || booking.Status != BookingStatus.Cancelled)
+            if (
+                booking == null ||
+                booking.Status == BookingStatus.Completed|| 
+                booking.Status==BookingStatus.Cancelled
+                )
                 return false;
 
             booking.Cancel();
-            await _unitOfWork.Bookings.UpdateAsync(booking);
             await _unitOfWork.CompleteAsync(); // حفظ التغييرات
-
-
             return true;
         }
 
@@ -54,11 +67,8 @@ namespace Application.Interfaces.Services.Implement
             if (booking == null || booking.Status != BookingStatus.Confirmed)
                 return false;
 
-            booking.Cancel();
-            await _unitOfWork.Bookings.UpdateAsync(booking);
+            booking.Complete();
             await _unitOfWork.CompleteAsync(); // حفظ التغييرات
-
-
             return true;
         }
 

@@ -5,14 +5,14 @@ namespace Domain.Models
 {
     public class Payment : AuditableEntity
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
 
 
-        public int? BookingId { get; set; }
-        public string UserId { get; set; } = null!;
+        public int? BookingId { get; private set; }
+        public string UserId { get; private set; } = null!;
 
 
-        public decimal Amount { get; set; }
+        public decimal Amount { get; private set; }
         public PaymentMethod Method { get; private set; } = PaymentMethod.Unknown;
         public PaymentStatus Status { get; private set; } = PaymentStatus.Pending;
         public string? TransactionId { get; private set; }
@@ -20,22 +20,37 @@ namespace Domain.Models
         public Booking? Booking { get; set; }
 
 
-        public void MarkAsPaid(string transactionId)
+        private Payment() { } //for EF -> need constructor فاضي 
+        public Payment(
+           int bookingId,
+        string userId,
+        decimal amount,
+        PaymentMethod method = PaymentMethod.Unknown)
         {
-            if (Status == PaymentStatus.Success) 
-                throw new InvalidOperationException("Payment already completed");
+            BookingId = bookingId;
+            UserId = userId;
+            Amount = amount;
+          Status = PaymentStatus.Pending;
+        }
+
+
+        public void MarkAsSuccess(string transactionId , string? rawResponse=null)
+        {
+            if (Status != PaymentStatus.Pending)
+                throw new InvalidOperationException("only pending payment can be marked as a success");
 
             Status = PaymentStatus.Success;
             TransactionId = transactionId;
+            RawResponse = rawResponse;
         }
 
-        public void MarkAsFailed(string? reason = null)
+        public void MarkAsFailed(string? rawResponse = null)
         {
-            if (Status == PaymentStatus.Success)
-                throw new InvalidOperationException("Successful payment cannot be failed.");
+            if (Status != PaymentStatus.Pending)
+                throw new InvalidOperationException("only pending payment can be marked as a failed");
 
             Status = PaymentStatus.Failed;
-            RawResponse = reason;
+            RawResponse = rawResponse;
         }
 
         public void Refund()

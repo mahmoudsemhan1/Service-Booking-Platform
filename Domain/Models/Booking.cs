@@ -11,12 +11,20 @@ namespace Domain.Models
     public class Booking:AuditableEntity
     {
         public int Id { get; set; }
-        public int ServiceId { get; set; }
-        public int ProviderId { get; set; }
-        public string UserId { get; set; } = null!;//FK 
-        public DateTime BookingDate { get; set; }
+        public int ServiceId { get; private set; }
+        public int ProviderId { get; private set; }
+        public string UserId { get; private set; } = null!;//FK 
+        public BookingStatus Status { get; private set; }=BookingStatus.Pending;
+        private Booking() { } // EF Core
 
-        public BookingStatus Status { get; private set; }
+        public Booking(string userId, int serviceId, int providerId)
+        {
+            UserId = userId;
+            ServiceId = serviceId;
+            ProviderId = providerId;
+            Status = BookingStatus.Pending;
+        }
+        public DateTime BookingDate { get; set; }
         // Domain logic: Confirm
         public void Confirm()
         {

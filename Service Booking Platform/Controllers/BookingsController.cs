@@ -13,23 +13,22 @@ namespace Service_Booking_Platform.Controllers
     [ApiController]
     public class BookingsController : ControllerBase
     {
-         private readonly IMapper _mapper;
         private readonly IBookingService _bookingService;
         private readonly IUnitofWork _unitofWork;
 
-        public BookingsController(IMapper mapper, IBookingService bookingService, IUnitofWork unitofWork)
+        public BookingsController( IBookingService bookingService, IUnitofWork unitofWork)
         {
-            _mapper = mapper;
+           
             _bookingService = bookingService;
             _unitofWork = unitofWork;
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll([FromBody] BookingFilterDto filterDto)
-        //{
-        //    var booking =await _bookingService.GetAllAsync(filterDto);
-        //    return Ok(booking);
-        //}
+        [HttpGet("{filtered}/Fileter")]
+        public async Task<IActionResult> GetAll([FromQuery] BookingFilterDto filterDto)
+        {
+            var booking = await _bookingService.GetAllAsync(filterDto);
+            return Ok(booking);
+        }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
