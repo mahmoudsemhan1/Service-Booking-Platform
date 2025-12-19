@@ -127,6 +127,42 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Service_Booking_Platform.Controllers.BookingsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Bookings/Fileter",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ProviderId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ServiceId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ToDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Service_Booking_Platform.Controllers.PaymentController",
     "Method": "GetAllPayments",
     "RelativePath": "api/Payment",
@@ -185,9 +221,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.PaymentController",
+    "ContainingType": "Service_Booking_Platform.Controllers.WebhookController",
     "Method": "MarkAsFailed",
-    "RelativePath": "api/Payment/failed",
+    "RelativePath": "api/Webhook/failed",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -201,9 +237,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.PaymentController",
+    "ContainingType": "Service_Booking_Platform.Controllers.WebhookController",
     "Method": "MarkAsSuccess",
-    "RelativePath": "api/Payment/success",
+    "RelativePath": "api/Webhook/success",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,

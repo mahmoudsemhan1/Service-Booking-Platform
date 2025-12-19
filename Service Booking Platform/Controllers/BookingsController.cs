@@ -23,7 +23,7 @@ namespace Service_Booking_Platform.Controllers
             _unitofWork = unitofWork;
         }
 
-        [HttpGet("{filtered}/Fileter")]
+        [HttpGet("Fileter")]
         public async Task<IActionResult> GetAll([FromQuery] BookingFilterDto filterDto)
         {
             var booking = await _bookingService.GetAllAsync(filterDto);

@@ -4,6 +4,7 @@ using Application.Interfaces.Services.IPaymentService;
 using AutoMapper;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
+using Domain.Models.Enum;
 
 namespace Application.Interfaces.Services.Implement
 {
@@ -19,13 +20,13 @@ namespace Application.Interfaces.Services.Implement
         }
         public async Task<IEnumerable<PaymentReadDto>> GetAllAsync()
         {
-            var payments =await _unitofWork.Payments.GetAllAsync();
-            return  _mapper.Map<IEnumerable<PaymentReadDto>>(payments);
+            var payments = await _unitofWork.Payments.GetAllAsync();
+            return _mapper.Map<IEnumerable<PaymentReadDto>>(payments);
         }
 
         public async Task<PaymentReadDto?> GetByIdAsync(int paymentId)
         {
-            var paymrnt= await _unitofWork.Payments.GetByIdAsync(paymentId);
+            var paymrnt = await _unitofWork.Payments.GetByIdAsync(paymentId);
 
             return paymrnt == null ? null : _mapper.Map<PaymentReadDto>(paymrnt);
         }
@@ -40,10 +41,27 @@ namespace Application.Interfaces.Services.Implement
         }
         public async Task<bool> MarkAsSuccessAsync(PaymentUpdateStatusDto dto)
         {
-            var payment= await _unitofWork.Payments.GetByTransactionIdAsync(dto.TransactionId);
-            if(payment == null) return false;
+            // Handles payment success coming from payment gateway (Webhook)
 
-            payment.MarkAsSuccess(dto.TransactionId,dto.RawResponse);
+            var payment = await _unitofWork.Payments.GetByTransactionIdAsync(dto.TransactionId);
+            if (payment == null) return false;
+
+            payment.MarkAsSuccess(dto.TransactionId, dto.RawResponse);
+
+            //Load related booking
+            if (payment.BookingId == null)
+                throw new InvalidOperationException("Payment has no related booking");
+
+            var booking = await _unitofWork.Bookings
+                .GetByIdAsync(payment.BookingId.Value);
+
+            if (booking == null)
+                throw new Exception("Booking not found for this payment");
+
+            //  Complete booking (Domain Logic)
+            if(booking.Status==BookingStatus.Confirmed)
+            booking.Complete();
+
             await _unitofWork.CompleteAsync();
             return true;
         }
@@ -52,7 +70,7 @@ namespace Application.Interfaces.Services.Implement
         {
             var payment = await _unitofWork.Payments.GetByTransactionIdAsync(dto.TransactionId);
             if (payment == null) return false;
-            
+
             payment.MarkAsFailed(dto.RawResponse);
             await _unitofWork.CompleteAsync();
             return true;

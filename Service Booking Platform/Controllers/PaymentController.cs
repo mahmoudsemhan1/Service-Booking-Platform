@@ -43,22 +43,7 @@ namespace Service_Booking_Platform.Controllers
             return CreatedAtAction(nameof(GetPaymentById), new { paymentId = payment.Id }, payment);
 
         }
-
-        [HttpPost("success")]
-        public async Task<IActionResult> MarkAsSuccess([FromBody] PaymentUpdateStatusDto dto)
-        {
-            var result = await _paymentService.MarkAsSuccessAsync(dto);
-            if (!result) return NotFound();
-            return Ok();
-        }
-
-        [HttpPost("failed")]
-        public async Task<IActionResult> MarkAsFailed([FromBody] PaymentUpdateStatusDto dto)
-        {
-            var result = await _paymentService.MarkAsFailedAsync(dto);
-            if (!result) return NotFound();
-            return Ok();
-        }
+       
 
         [HttpPost("{paymentId}/refund")]
         public async Task<IActionResult> RefundPayment(int paymentId)
