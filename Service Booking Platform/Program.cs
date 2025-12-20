@@ -1,6 +1,7 @@
 using Application.Interfaces.Services.BookingService;
 using Application.Interfaces.Services.Implement;
 using Application.Interfaces.Services.IPaymentService;
+using Application.Interfaces.Services.IServices;
 using Application.Mappings;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.UnitofWork;
@@ -27,6 +28,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository
 builder.Services.AddScoped<IUnitofWork, UnitOfwork>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IServiceService,ServiceService>();
  
 
 

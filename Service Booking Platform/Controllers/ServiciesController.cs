@@ -1,0 +1,64 @@
+﻿using Application.DTOs.Service;
+using Application.Interfaces.Services.IServices;
+using AutoMapper.Configuration.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Service_Booking_Platform.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ServiciesController : ControllerBase
+    {
+        private readonly IServiceService _serviceService;
+
+        public ServiciesController(IServiceService serviceService)
+        {
+            _serviceService = serviceService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var services= await _serviceService.GetAllAsync();
+
+            return Ok(services);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var srevice = await _serviceService.GetByIdAsync(id);
+
+            return Ok(srevice); 
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> CreateSrvice( ServiceCreateDto dto)
+        {
+            if(!ModelState.IsValid) 
+                return BadRequest(ModelState);
+
+           var service= await _serviceService.CreateAsync(dto);
+
+            return Ok(service);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateService(int  id, ServiceUpdateDto dto)
+        {
+            var service= await _serviceService.UpdateAsync(id, dto);
+
+            return Ok(service);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> Deleteservice(int id)
+        {
+            var service= await _serviceService.DeleteAsync(id);
+
+            return Ok();
+        }
+
+
+    }
+}

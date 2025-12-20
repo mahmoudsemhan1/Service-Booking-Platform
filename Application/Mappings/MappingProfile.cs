@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Booking;
 using Application.DTOs.Payment;
+using Application.DTOs.Service;
 using AutoMapper;
 using Domain.Models;
 using Domain.Models.Enum;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Mappings
 {
-    public class MappingProfile:Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
@@ -29,6 +30,24 @@ namespace Application.Mappings
             CreateMap<PaymentCreateDto, Payment>();
 
             CreateMap<Payment, PaymentReadDto>();
+            // ===== services ===
+            CreateMap<ServiceCreateDto, Service>()
+            .ConstructUsing(dto =>
+            new Service(
+                dto.Title,
+                dto.Price,
+                dto.Description,
+                dto.DurationMinutes,
+                dto.ImagePath
+                              )
+                         );
+
+            CreateMap<ServiceUpdateDto, Service>()
+                .ForAllMembers(opt => opt.Ignore());
+
+            CreateMap<Service, ServiceReadDto>();
+
+
 
         }
     }
