@@ -1,4 +1,5 @@
 using Application.Interfaces.Services.BookingService;
+using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.Implement;
 using Application.Interfaces.Services.IPaymentService;
 using Application.Interfaces.Services.IServices;
@@ -7,6 +8,7 @@ using Domain.Interfaces.Repositories;
 using Domain.Interfaces.UnitofWork;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,7 +31,8 @@ builder.Services.AddScoped<IUnitofWork, UnitOfwork>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IServiceService,ServiceService>();
- 
+builder.Services.AddScoped<IFileService,FileService>();
+
 
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -42,6 +45,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseStaticFiles();
+
+app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 

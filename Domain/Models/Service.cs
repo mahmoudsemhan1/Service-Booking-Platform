@@ -11,23 +11,35 @@ namespace Domain.Models
         public string? Description { get; private set; }
         public decimal Price { get; private set; }
         public int? DurationMinutes { get; private set; }
-        public string? ImagePath { get; private set; }
 
+        private readonly List<Image> _images = new();
+        public IReadOnlyCollection<Image> Images => _images.AsReadOnly();
+
+        public void AddImage(string path, bool isPrimary = false)
+        {
+            _images.Add(new Image(path, isPrimary));
+
+        }
+        public void RemoveImage(int ImageID)
+        {
+            var image = _images.FirstOrDefault(p => p.Id == ImageID);
+            if (image != null) _images.Remove(image);
+
+        }
         // Navigation properties
         public ICollection<ProviderService> ProviderServices { get; private set; } = new List<ProviderService>();
 
         private Service() { } // EF Core
 
-        public Service(string title, decimal price, string? description = null, int? durationMinutes = null, string? imagePath = null)
+        public Service(string title, decimal price, string? description = null, int? durationMinutes = null)
         {
             Title = !string.IsNullOrWhiteSpace(title) ? title : throw new ArgumentNullException(nameof(title));
             Price = price >= 0 ? price : throw new ArgumentException("Price cannot be negative.", nameof(price));
             Description = description;
             DurationMinutes = durationMinutes;
-            ImagePath = imagePath;
         }
 
-        public void Update(string? title = null, decimal? price = null, int? durationMinutes = null, string? description = null, string? imagePath = null)
+        public void Update(string? title = null, decimal? price = null, int? durationMinutes = null, string? description = null)
         {
             if (!string.IsNullOrWhiteSpace(title))
                 Title = title;
@@ -44,8 +56,7 @@ namespace Domain.Models
             if (description != null)
                 Description = description;
 
-            if (imagePath != null)
-                ImagePath = imagePath;
+           
         }
 
         public void AddProviderService(ProviderService providerService)

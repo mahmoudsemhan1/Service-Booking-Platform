@@ -19,7 +19,6 @@ namespace Infrastructure.Data
         public DbSet<Booking> Bookings => Set<Booking>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<Review> Reviews => Set<Review>();
-        public DbSet<Image> Images => Set<Image>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -67,6 +66,29 @@ namespace Infrastructure.Data
             // =======================
             // Domain Relationships
             // =======================
+
+
+            // Owned Types (Images)
+            // إعداد صور الخدمات
+            builder.Entity<Service>(entity =>
+            {
+                entity.OwnsMany(s => s.Images, imageBuilder =>
+                {
+                    imageBuilder.ToTable("ServiceImages");
+                    imageBuilder.HasKey(p => p.Id);
+                    imageBuilder.WithOwner().HasForeignKey("ServiceId");
+
+                    // السطر ده هو اللي هيحل مشكلة الـ NULL
+                    // بنقوله إن خاصية ImagePath في الكلاس مرتبطة بعمود اسمه ImagePath في الجدول وهي إجبارية
+                    imageBuilder.Property(p => p.ImagePath)
+                                .HasColumnName("ImagePath")
+                                .IsRequired();
+
+                    imageBuilder.Property(p => p.IsPrimary)
+                                .HasDefaultValue(false);
+                });
+            });
+
 
             // ProviderService (Many-to-Many)
             builder.Entity<ProviderService>()
@@ -123,7 +145,6 @@ namespace Infrastructure.Data
             builder.Entity<Booking>().HasQueryFilter(x => !x.IsDeleted);
             builder.Entity<Payment>().HasQueryFilter(x => !x.IsDeleted);
             builder.Entity<Review>().HasQueryFilter(x => !x.IsDeleted);
-            builder.Entity<Image>().HasQueryFilter(x => !x.IsDeleted);
 
             // =======================
             // Precision Configurations

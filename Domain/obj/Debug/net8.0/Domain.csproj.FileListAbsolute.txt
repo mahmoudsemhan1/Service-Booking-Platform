@@ -6,8 +6,8 @@ H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.GeneratedM
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.sourcelink.json
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.dll
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\refint\Domain.dll
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.pdb
 H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\ref\Domain.dll
-H:\MyProjects\Service Booking Platform\Domain\obj\Debug\net8.0\Domain.sourcelink.json

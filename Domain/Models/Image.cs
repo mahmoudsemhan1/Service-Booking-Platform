@@ -10,15 +10,30 @@ namespace Domain.Models
 {
     public class Image : AuditableEntity
     {
-        public int Id { get; set; }
-
-
-        public string? EntityType { get; set; } // 'Service', 'Provider', إلخ
-        public int? EntityId { get; set; }
-
+        public int Id { get;private   set; }
 
         [Required]
-        public string ImagePath { get; set; } = null!; // مسار الصورة على الجهاز
-        public bool IsPrimary { get; set; } = false;
+        public string ImagePath { get;private set; } = null!; // مسار الصورة على الجهاز
+        public bool IsPrimary { get; private set; }
+
+        private Image() { }
+
+        public Image(string imagePath,bool isPrimary=false)
+        {
+        
+            ImagePath=imagePath ;
+            IsPrimary= isPrimary;
+
+        }
+
+        public void MarkAsPrimary()
+        {
+            IsPrimary = true;
+        }
+        public void UnmarkPrimary()
+        {
+            IsPrimary = false;
+        }
+
     }
 }

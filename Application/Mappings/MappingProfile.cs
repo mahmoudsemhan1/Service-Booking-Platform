@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Booking;
+using Application.DTOs.Image;
 using Application.DTOs.Payment;
 using Application.DTOs.Service;
 using AutoMapper;
@@ -25,6 +26,11 @@ namespace Application.Mappings
             CreateMap<BookingUpdateDto, Booking>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+
+            //====image====
+
+            CreateMap<Image, ImageReadDto>();
+
             // ===== Payment =====
 
             CreateMap<PaymentCreateDto, Payment>();
@@ -37,16 +43,15 @@ namespace Application.Mappings
                 dto.Title,
                 dto.Price,
                 dto.Description,
-                dto.DurationMinutes,
-                dto.ImagePath
-                              )
+                dto.DurationMinutes
+                )
                          );
 
             CreateMap<ServiceUpdateDto, Service>()
                 .ForAllMembers(opt => opt.Ignore());
 
-            CreateMap<Service, ServiceReadDto>();
-
+            CreateMap<Service, ServiceReadDto>()
+                        .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
 
 
         }

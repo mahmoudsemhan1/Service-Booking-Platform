@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Service;
+using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.IServices;
 using AutoMapper.Configuration.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -11,10 +12,12 @@ namespace Service_Booking_Platform.Controllers
     public class ServiciesController : ControllerBase
     {
         private readonly IServiceService _serviceService;
+        private readonly IFileService _fileService;
 
-        public ServiciesController(IServiceService serviceService)
+        public ServiciesController(IServiceService serviceService, IFileService fileService)
         {
             _serviceService = serviceService;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -32,15 +35,13 @@ namespace Service_Booking_Platform.Controllers
 
             return Ok(srevice); 
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> CreateSrvice( ServiceCreateDto dto)
+        public async Task<IActionResult> CreateSrvice([FromForm] ServiceCreateDto dto)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-           var service= await _serviceService.CreateAsync(dto);
-
+            var service = await _serviceService.CreateAsync(dto);
             return Ok(service);
         }
 
