@@ -17,6 +17,15 @@ namespace Domain.Models
 
         public void AddImage(string path, bool isPrimary = false)
         {
+            if (!_images.Any())
+                isPrimary = true;
+            if (isPrimary)
+            {
+                foreach (var existingImage in _images)
+                {
+                    existingImage.UnmarkPrimary(); 
+                }
+            }
             _images.Add(new Image(path, isPrimary));
 
         }

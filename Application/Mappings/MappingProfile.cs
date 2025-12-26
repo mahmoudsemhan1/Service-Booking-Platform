@@ -38,18 +38,7 @@ namespace Application.Mappings
             CreateMap<Payment, PaymentReadDto>();
             // ===== services ===
             CreateMap<ServiceCreateDto, Service>()
-            .ConstructUsing(dto =>
-            new Service(
-                dto.Title,
-                dto.Price,
-                dto.Description,
-                dto.DurationMinutes
-                )
-                         );
-
-            CreateMap<ServiceUpdateDto, Service>()
-                .ForAllMembers(opt => opt.Ignore());
-
+                 .ForMember(dest => dest.Images, opt => opt.Ignore());
             CreateMap<Service, ServiceReadDto>()
                         .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
 

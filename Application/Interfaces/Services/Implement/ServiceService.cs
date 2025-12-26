@@ -42,13 +42,20 @@ namespace Application.Interfaces.Services.Implement
         public async Task<ServiceReadDto> CreateAsync(ServiceCreateDto dto)
         {
             var service = _mapper.Map<Service>(dto);
-            if (dto.ImagePath != null && dto.ImagePath.Any())
-            {
-                foreach (var file in dto.ImagePath)
-                {
-                    var path = await _fileService.UploadFileAsync(file, "services");
 
-                    service.AddImage(path);
+            if (dto.ImageFiles != null && dto.ImageFiles.Any())
+            {
+                for (int i = 0; i < dto.ImageFiles.Count; i++)
+                {
+                    // رفع الملف الحالي
+                    var path = await _fileService.UploadFileAsync(dto.ImageFiles[i], "services");
+
+                    // التأكد من وجود قيمة في قائمة الـ Boolean المقابلة، وإلا نعتبرها false
+                    bool isPrimary = (dto.IsPrimaryStatus != null && dto.IsPrimaryStatus.Count > i)
+                                     ? dto.IsPrimaryStatus[i]
+                                     : false;
+
+                    service.AddImage(path, isPrimary);
                 }
             }
             await _unitofWork.Services.AddAsync(service);
