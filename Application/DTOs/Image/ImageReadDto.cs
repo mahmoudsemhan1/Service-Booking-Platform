@@ -9,7 +9,7 @@ namespace Application.DTOs.Image
     public class ImageReadDto
     {
         public int Id { get; set; }
-        public string Path { get; set; } 
+        public string ImagePath { get; set; } 
         public bool IsPrimary { get; set; }
     }
 }

@@ -36,6 +36,9 @@ builder.Services.AddScoped<IServiceService,ServiceService>();
 builder.Services.AddScoped<IFileService,FileService>();
 
 
+//for httpcontextaccessor for getting user info from token and other things (url of images)
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

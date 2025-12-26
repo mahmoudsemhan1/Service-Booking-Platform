@@ -41,8 +41,12 @@ namespace Application.Mappings
                  .ForMember(dest => dest.Images, opt => opt.Ignore());
             CreateMap<Service, ServiceReadDto>()
                         .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
+            CreateMap<Service, ServiceReadDto>();
 
-
+            // 3. Image Mapping (Read) - هنا نستخدم الـ Resolver for URL لإنشاء الرابط الكامل للصورة
+            CreateMap<Image, ImageReadDto>()
+                .ForMember(dest => dest.ImagePath, opt => opt.MapFrom<ImageUrlResolver>());
         }
+
     }
 }
