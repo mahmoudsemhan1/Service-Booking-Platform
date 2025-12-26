@@ -14,5 +14,6 @@ namespace Application.Interfaces.Services.IServices
         Task<ServiceReadDto> CreateAsync(ServiceCreateDto dto);
         Task<ServiceReadDto> UpdateAsync(int id, ServiceUpdateDto dto);
         Task<bool> DeleteAsync(int id);
+
     }
 }

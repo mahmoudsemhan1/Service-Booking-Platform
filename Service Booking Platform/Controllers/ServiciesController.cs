@@ -45,12 +45,16 @@ namespace Service_Booking_Platform.Controllers
             return Ok(service);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateService(int  id, ServiceUpdateDto dto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateService(int  id,[FromForm] ServiceUpdateDto dto)
         {
+            if (id != dto.Id)
+            {
+                return BadRequest("ID mismatch between URL and body.");
+            }
             var service= await _serviceService.UpdateAsync(id, dto);
 
-            return Ok(service);
+            return NoContent();
         }
         [HttpDelete]
         public async Task<IActionResult> Deleteservice(int id)

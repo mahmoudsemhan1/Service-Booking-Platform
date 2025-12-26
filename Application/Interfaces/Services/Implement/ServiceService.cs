@@ -65,16 +65,36 @@ namespace Application.Interfaces.Services.Implement
         }
         public async Task<ServiceReadDto> UpdateAsync(int id, ServiceUpdateDto dto)
         {
-            var service = await _unitofWork.Services.GetByIdAsync(id);
-            if (service == null)
-                throw new KeyNotFoundException("Service not found");
+            var service = await _unitofWork.Services.GetByIdWithImagesAsync(id);
+            if (service == null) throw new Exception("Service not found");
 
-            service.Update(
-                dto.Title,
-                dto.Price,
-                dto.DurationMinutes,
-                dto.Description
-            );
+            service.Update(dto.Title, dto.Price, dto.DurationMinutes, dto.Description);
+            // delete the old images 
+            if (dto.ImageIdsToDelete != null)
+            {
+                foreach (var imageId in dto.ImageIdsToDelete)
+                {
+                    var image = service.Images.FirstOrDefault(i => i.Id == imageId);
+                    if (image != null)
+                    {
+                        // مسح الملف من الهارد ديسك أولاً
+                        _fileService.DeleteFile(image.ImagePath);
+                        // مسح السجل من الداتابيز
+                        service.RemoveImage(imageId);
+                    }
+                }
+            }
+            if (dto.NewImageFiles != null)
+            {
+                for (int i = 0; i < dto.NewImageFiles.Count; i++)
+                {
+                    var path = await _fileService.UploadFileAsync(dto.NewImageFiles[i], "services");
+                    bool isPrimary = dto.NewIsPrimaryStatus != null && dto.NewIsPrimaryStatus.Count > i
+                                     ? dto.NewIsPrimaryStatus[i] : false;
+
+                    service.AddImage(path, isPrimary);
+                }
+            }
 
             await _unitofWork.CompleteAsync();
 

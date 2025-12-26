@@ -41,5 +41,16 @@ namespace Infrastructure.Services
             }
             return Task.FromResult(uniqueFileName);
         }
+
+        public void DeleteFile(string relativePath)
+        {
+            if (string.IsNullOrEmpty(relativePath)) return;
+
+            var fullPath = Path.Combine(_env.WebRootPath, relativePath);
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+        }
     }
 }

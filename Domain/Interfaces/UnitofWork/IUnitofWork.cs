@@ -11,12 +11,13 @@ namespace Domain.Interfaces.UnitofWork
     public interface IUnitofWork : IDisposable
     {
          IGenericRepository<Provider> Providers { get; }
-        IGenericRepository<Service> Services { get; }
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
 
         IBookingRepository Bookings { get; }
         IPaymentRepository Payments { get; }
+
+        IServiceRepository Services { get; }
 
 
         Task<int> CompleteAsync();
