@@ -90,11 +90,21 @@ namespace Infrastructure.Data
             });
 
 
-            // ProviderService (Many-to-Many)
-            builder.Entity<ProviderService>()
-                .HasIndex(ps => new { ps.ProviderId, ps.ServiceId })
-                .IsUnique();
+            // Configuration for ProviderService (The Marketplace Logic)
+            builder.Entity<ProviderService>(entity =>
+            {
+                entity.HasIndex(ps => new { ps.ProviderId, ps.ServiceId })
+                      .IsUnique();
 
+                entity.Property(ps => ps.Price)
+                      .HasColumnType("decimal(18,2)")
+                      .IsRequired();
+
+                entity.Property(ps => ps.DiscountedPrice)
+                      .HasColumnType("decimal(18,2)");
+            });
+
+            // ProviderService relationships
             builder.Entity<ProviderService>()
                 .HasOne(ps => ps.Provider)
                 .WithMany(p => p.ProviderServices)
@@ -151,7 +161,7 @@ namespace Infrastructure.Data
             // =======================
 
             builder.Entity<Service>()
-                .Property(s => s.Price)
+                .Property(s => s.BasePrice)
                 .HasColumnType("decimal(18,2)");
 
             builder.Entity<Booking>()

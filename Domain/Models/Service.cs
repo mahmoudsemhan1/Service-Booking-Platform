@@ -9,7 +9,7 @@ namespace Domain.Models
         public int Id { get; private set; }
         public string Title { get; private set; } = null!;
         public string? Description { get; private set; }
-        public decimal Price { get; private set; }
+        public decimal? BasePrice { get; private set; } 
         public int? DurationMinutes { get; private set; }
 
         private readonly List<Image> _images = new();
@@ -40,10 +40,10 @@ namespace Domain.Models
 
         private Service() { } // EF Core
 
-        public Service(string title, decimal price, string? description = null, int? durationMinutes = null)
+        public Service(string title, decimal? price, string? description = null, int? durationMinutes = null)
         {
             Title = !string.IsNullOrWhiteSpace(title) ? title : throw new ArgumentNullException(nameof(title));
-            Price = price >= 0 ? price : throw new ArgumentException("Price cannot be negative.", nameof(price));
+            BasePrice = price >= 0 ? price : throw new ArgumentException("Price cannot be negative.", nameof(price));
             Description = description;
             DurationMinutes = durationMinutes;
         }
@@ -56,7 +56,7 @@ namespace Domain.Models
             if (price.HasValue)
             {
                 if (price.Value < 0) throw new ArgumentException("Price cannot be negative.");
-                Price = price.Value;
+                BasePrice = price.Value;
             }
 
             if (durationMinutes.HasValue)
