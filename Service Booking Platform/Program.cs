@@ -34,6 +34,7 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IServiceService,ServiceService>();
 builder.Services.AddScoped<IFileService,FileService>();
+builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 
 
 //for httpcontextaccessor for getting user info from token and other things (url of images)

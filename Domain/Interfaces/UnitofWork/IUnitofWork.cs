@@ -10,13 +10,13 @@ namespace Domain.Interfaces.UnitofWork
 {
     public interface IUnitofWork : IDisposable
     {
-         IGenericRepository<Provider> Providers { get; }
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
 
         IBookingRepository Bookings { get; }
         IPaymentRepository Payments { get; }
 
+        IProviderRepository Providers { get; }
         IServiceRepository Services { get; }
 
 

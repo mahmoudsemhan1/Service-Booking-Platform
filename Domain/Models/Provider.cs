@@ -18,6 +18,8 @@ namespace Domain.Models
         public TimeSpan? OpenTime { get; private set; }
         public TimeSpan? CloseTime { get; private set; }
 
+        public bool IsActive { get; private set; } = true;
+
         private readonly List<ProviderService> _providerServices = new();
         public virtual IReadOnlyCollection<ProviderService> ProviderServices => _providerServices.AsReadOnly();
 
@@ -34,6 +36,30 @@ namespace Domain.Models
             Address = address;
         }
 
+        public void UpdateBusinessInfo(string businessName, string? address, TimeSpan? openTime, TimeSpan? closeTime)
+        {
+            if (string.IsNullOrWhiteSpace(businessName))
+                throw new ArgumentException("Business name cannot be empty.");
+
+            if (openTime.HasValue && closeTime.HasValue)
+            {
+                if (closeTime.Value <= openTime.Value)
+                {
+                    throw new ArgumentException("Close time must be after open time.");
+                }
+            }
+
+            BusinessName = businessName;
+            Address = address;
+            OpenTime = openTime;
+            CloseTime = closeTime;
+
+      
+        }
+        public void ToggleStatus()
+        {
+            IsActive = !IsActive;
+        }
         public void UpdateLocation(string? address, double? lat, double? lon)
         {
             Address = address;

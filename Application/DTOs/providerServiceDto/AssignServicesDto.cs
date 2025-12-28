@@ -1,5 +1,4 @@
 ﻿
-
 namespace Application.DTOs.providerServiceDto
 {
     public class AssignServicesDto

@@ -21,6 +21,7 @@ namespace Infrastructure.UnitOfWork
             Bookings = new BookingRepository(_context);
             Payments = new  PaymentRepository(_context);
             Services = new ServiceRepository(_context);
+            provider = new ProviderRepository(_context);
         }
 
         // services
@@ -28,6 +29,9 @@ namespace Infrastructure.UnitOfWork
         public IPaymentRepository Payments {  get; }
 
         public IServiceRepository Services { get; }
+
+        public IProviderRepository provider { get; }
+        // public IProviderRepository ProvidersServices { get; }
 
         //public IGenericRepository<User> Users { get; }
         public IGenericRepository<Provider> Providers { get; }
