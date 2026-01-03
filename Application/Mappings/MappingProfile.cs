@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Application.DTOs.Account.Account;
 
 namespace Application.Mappings
 {
@@ -67,6 +68,8 @@ namespace Application.Mappings
                     src.Service!.Images.FirstOrDefault(img => img.IsPrimary) != null
                     ? src.Service.Images.FirstOrDefault(img => img.IsPrimary)!.ImagePath
                     : null));
+
+   
         }
 
 

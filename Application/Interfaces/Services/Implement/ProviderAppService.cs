@@ -21,7 +21,7 @@ namespace Application.Interfaces.Services.Implement
         }
         public Task AssignServicesAsync(string userId, AssignServicesDto dto)
         {
-            var userProvider = _unitofWork.ProvidersServices
+            var userProvider = _unitofWork.Providers
                 .GetByUserIdWithDetailsAsync(userId).Result;
             if (userProvider == null)
             {
@@ -52,16 +52,16 @@ namespace Application.Interfaces.Services.Implement
             return _unitofWork.CompleteAsync();
         }
 
-        public Task<ProviderProfileReadDto> GetProfileAsync(string userId)
+        public async Task<ProviderProfileReadDto> GetProfileAsync(string userId)
         {
-            var userProvider = _unitofWork.ProvidersServices
-                .GetByUserIdWithDetailsAsync(userId).Result;
+            var userProvider  =await _unitofWork.Providers
+                .GetByUserIdWithDetailsAsync(userId);
             if (userProvider == null)
             {
                 throw new Exception("Provider not found");
             }
             var providerProfileDto = _mapper.Map<ProviderProfileReadDto>(userProvider);
-            return Task.FromResult(providerProfileDto);
+            return (providerProfileDto);
         }
 
         public async Task RemoveServiceAsync(string userId, int serviceId)

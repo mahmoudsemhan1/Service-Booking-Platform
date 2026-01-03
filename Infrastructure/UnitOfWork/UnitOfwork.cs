@@ -3,41 +3,69 @@ using Domain.Interfaces.UnitofWork;
 using Domain.Models;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
- 
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace Infrastructure.UnitOfWork
 {
     public class UnitOfwork : IUnitofWork
     {
         private readonly AppDbContext _context;
+        private IDbContextTransaction? _currentTransaction;
         public UnitOfwork(AppDbContext context)
         {
             _context = context;
 
             //Users = new GenericRepository<User>(_context);
-            Providers = new GenericRepository<Provider>(_context);
+            //Providers = new GenericRepository<Provider>(_context);
             Reviews = new GenericRepository<Review>(_context);
             Images = new GenericRepository<Image>(_context);
-            //services
+            ProviderServices= new GenericRepository<ProviderService>(_context);
             Bookings = new BookingRepository(_context);
             Payments = new  PaymentRepository(_context);
             Services = new ServiceRepository(_context);
-            provider = new ProviderRepository(_context);
+            Providers = new ProviderRepository(_context);
+            UserProfiles = new GenericRepository<UserProfile>(_context);
         }
 
-        // services
-        public IBookingRepository Bookings { get; }
-        public IPaymentRepository Payments {  get; }
-
-        public IServiceRepository Services { get; }
-
-        public IProviderRepository provider { get; }
-        // public IProviderRepository ProvidersServices { get; }
-
-        //public IGenericRepository<User> Users { get; }
-        public IGenericRepository<Provider> Providers { get; }
         public IGenericRepository<Review> Reviews { get; }
         public IGenericRepository<Image> Images { get; }
+        public IGenericRepository<ProviderService> ProviderServices { get; }
+        public IBookingRepository Bookings { get; }
+        public IPaymentRepository Payments { get; }
+        public IServiceRepository Services { get; }
 
+       public  IProviderRepository Providers { get; }
+
+        public IGenericRepository<UserProfile> UserProfiles { get; }
+
+        public async Task BeginTransactionAsync()
+        {
+            _currentTransaction = await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                if (_currentTransaction != null)
+                {
+                    await _currentTransaction.CommitAsync();
+                }
+            }
+            finally
+            {
+                _currentTransaction?.Dispose();
+                _currentTransaction = null; 
+            }
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            await _currentTransaction.RollbackAsync();
+            _currentTransaction?.Dispose();
+        }
         public void Dispose()
         {
             _context.Dispose();

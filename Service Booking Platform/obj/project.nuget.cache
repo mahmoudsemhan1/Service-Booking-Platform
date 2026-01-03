@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "BnKBvzk5Tj8=",
+  "dgSpecHash": "C1WilcwmOjc=",
   "success": true,
   "projectFilePath": "H:\\MyProjects\\Service Booking Platform\\Service Booking Platform\\Service Booking Platform.csproj",
   "expectedPackageFiles": [
@@ -10,6 +10,7 @@
     "C:\\Users\\Mahmoud\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
     "C:\\Users\\Mahmoud\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\Mahmoud\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\Mahmoud\\.nuget\\packages\\microsoft.aspnetcore.authentication.google\\8.0.22\\microsoft.aspnetcore.authentication.google.8.0.22.nupkg.sha512",
     "C:\\Users\\Mahmoud\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.22\\microsoft.aspnetcore.authentication.jwtbearer.8.0.22.nupkg.sha512",
     "C:\\Users\\Mahmoud\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.2\\microsoft.aspnetcore.cryptography.internal.8.0.2.nupkg.sha512",
     "C:\\Users\\Mahmoud\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\8.0.2\\microsoft.aspnetcore.cryptography.keyderivation.8.0.2.nupkg.sha512",

@@ -94,9 +94,21 @@ namespace Application.Interfaces.Services.Implement
             return _mapper.Map<BookingReadDto>(booking);
         }
 
-        public async Task<BookingReadDto> CreateAsync(BookingCreateDto dto)
+        public async Task<BookingReadDto> CreateAsync(BookingCreateDto dto, string currentUserId)
         {
+            var service = await _unitOfWork.Services.GetByIdAsync(dto.ServiceId);
+            if (service == null)
+                throw new Exception("this service not available");
+            var isAlreadyBooked = await _unitOfWork.Bookings.FindAsync(b =>
+            b.ProviderId==dto.ProviderId && b.BookingDate==dto.BookingDate  && b.Status!=BookingStatus.Cancelled
+
+            );
+            if (isAlreadyBooked.Any())
+                throw new Exception(" his provider is already booked at this time.");
+
             var booking= _mapper.Map<Booking>(dto);
+
+            booking.CreatedAt= DateTime.Now;
            
             await _unitOfWork.Bookings.AddAsync(booking);
             await _unitOfWork.CompleteAsync();

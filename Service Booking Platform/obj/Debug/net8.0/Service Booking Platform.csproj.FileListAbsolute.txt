@@ -1,13 +1,6 @@
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.csproj.AssemblyReference.cache
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\rpswa.dswa.cache.json
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.GeneratedMSBuildEditorConfig.editorconfig
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.AssemblyInfoInputs.cache
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.AssemblyInfo.cs
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.csproj.CoreCompileInputs.cache
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.MvcApplicationPartsAssemblyInfo.cache
-H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.sourcelink.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\appsettings.Development.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\appsettings.json
+H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Service Booking Platform.staticwebassets.runtime.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Service Booking Platform.staticwebassets.endpoints.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Service Booking Platform.exe
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Service Booking Platform.deps.json
@@ -20,6 +13,7 @@ H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Azure.Identity.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\FluentValidation.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Humanizer.dll
+H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
@@ -141,7 +135,15 @@ H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Infrastructure.pdb
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Application.pdb
 H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Domain.pdb
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.csproj.AssemblyReference.cache
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\rpswa.dswa.cache.json
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.GeneratedMSBuildEditorConfig.editorconfig
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.AssemblyInfoInputs.cache
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.AssemblyInfo.cs
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.csproj.CoreCompileInputs.cache
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.MvcApplicationPartsAssemblyInfo.cs
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.MvcApplicationPartsAssemblyInfo.cache
+H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.sourcelink.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\rjimswa.dswa.cache.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -157,4 +159,3 @@ H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.pdb
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\Service Booking Platform.genruntimeconfig.cache
 H:\MyProjects\Service Booking Platform\Service Booking Platform\obj\Debug\net8.0\ref\Service Booking Platform.dll
-H:\MyProjects\Service Booking Platform\Service Booking Platform\bin\Debug\net8.0\Service Booking Platform.staticwebassets.runtime.json

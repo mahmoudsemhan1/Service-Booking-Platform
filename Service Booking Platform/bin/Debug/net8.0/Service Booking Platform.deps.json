@@ -9,6 +9,7 @@
       "Service Booking Platform/1.0.0": {
         "dependencies": {
           "Infrastructure": "1.0.0",
+          "Microsoft.AspNetCore.Authentication.Google": "8.0.22",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.22",
           "Microsoft.EntityFrameworkCore.Design": "8.0.22",
           "Swashbuckle.AspNetCore": "6.6.2"
@@ -87,6 +88,14 @@
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Authentication.Google/8.0.22": {
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Authentication.Google.dll": {
+            "assemblyVersion": "8.0.22.0",
+            "fileVersion": "8.0.2225.52808"
           }
         }
       },
@@ -1114,7 +1123,9 @@
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "Domain": "1.0.0",
           "Microsoft.AspNetCore.Hosting": "2.3.0",
-          "Microsoft.AspNetCore.Http.Features": "5.0.17"
+          "Microsoft.AspNetCore.Http.Features": "5.0.17",
+          "Microsoft.IdentityModel.Tokens": "7.1.2",
+          "System.IdentityModel.Tokens.Jwt": "7.1.2"
         },
         "runtime": {
           "Application.dll": {
@@ -1126,6 +1137,7 @@
       "Domain/1.0.0": {
         "dependencies": {
           "FluentValidation": "12.1.1",
+          "Microsoft.EntityFrameworkCore": "8.0.22",
           "Stripe.net": "50.0.0"
         },
         "runtime": {
@@ -1199,6 +1211,13 @@
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authentication.Google/8.0.22": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NXmczBh2Ze0x+HbMXIlBHoG+8y6NZHA1SA8vNVAUJdlw1B4w78ZJ3L5dnNNfstBs35bGOdG5F2TSp00Gx48Q/w==",
+      "path": "microsoft.aspnetcore.authentication.google/8.0.22",
+      "hashPath": "microsoft.aspnetcore.authentication.google.8.0.22.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication.JwtBearer/8.0.22": {
       "type": "package",

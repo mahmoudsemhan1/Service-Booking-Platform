@@ -12,17 +12,19 @@ namespace Domain.Interfaces.UnitofWork
     {
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
-
+        IGenericRepository<UserProfile> UserProfiles { get; }
         IBookingRepository Bookings { get; }
         IPaymentRepository Payments { get; }
 
         IProviderRepository Providers { get; }
         IServiceRepository Services { get; }
 
-
         Task<int> CompleteAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
 
 
-        
+
     }
 }

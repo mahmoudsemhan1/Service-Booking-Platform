@@ -1,12 +1,112 @@
 [
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.BookingsController",
-    "Method": "GetAll",
-    "RelativePath": "api/Bookings",
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/Account/change-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.Account.ChangePasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "SuperCreateUser",
+    "RelativePath": "api/Account/create-user",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.Account.Account\u002BRegisterDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "GetCurrentUser",
+    "RelativePath": "api/Account/current-user",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "DeleteUser",
+    "RelativePath": "api/Account/delete-user/{userId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "GoogleResponse",
+    "RelativePath": "api/Account/google-response",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "Login",
+    "RelativePath": "api/Account/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loginDto",
+        "Type": "Application.DTOs.Account.Account\u002BLoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "LoginGoogle",
+    "RelativePath": "api/Account/login-google",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.AccountController",
+    "Method": "Register",
+    "RelativePath": "api/Account/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.Account.Account\u002BRegisterDto",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -221,6 +321,90 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Service_Booking_Platform.Controllers.ProviderController",
+    "Method": "AssignServices",
+    "RelativePath": "api/Provider/assign-services",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.providerServiceDto.AssignServicesDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.ProviderController",
+    "Method": "UpdateBusinessInfo",
+    "RelativePath": "api/Provider/business-info",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Application.DTOs.providerServiceDto.UpdateBusinessInfoDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.ProviderController",
+    "Method": "GetMyProfile",
+    "RelativePath": "api/Provider/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.ProviderController",
+    "Method": "RemoveService",
+    "RelativePath": "api/Provider/remove-service/{serviceId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "serviceId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.ReviewContoller",
+    "Method": "GetAll",
+    "RelativePath": "api/ReviewContoller",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.ReviewContoller",
+    "Method": "GetById",
+    "RelativePath": "api/ReviewContoller/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
     "Method": "GetAll",
     "RelativePath": "api/Servicies",
@@ -266,22 +450,6 @@
       {
         "Name": "IsPrimaryStatus",
         "Type": "System.Collections.Generic.List\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
-    "Method": "Deleteservice",
-    "RelativePath": "api/Servicies",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
         "IsRequired": false
       }
     ],
@@ -355,6 +523,22 @@
         "Name": "ImageIdsToDelete",
         "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
+    "Method": "Deleteservice",
+    "RelativePath": "api/Servicies/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

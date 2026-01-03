@@ -2,24 +2,27 @@
 using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.IServices;
 using AutoMapper.Configuration.Annotations;
+using Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Service_Booking_Platform.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ServiciesController : ControllerBase
+    public class ServicesController : ControllerBase
     {
         private readonly IServiceService _serviceService;
         private readonly IFileService _fileService;
 
-        public ServiciesController(IServiceService serviceService, IFileService fileService)
+        public ServicesController(IServiceService serviceService, IFileService fileService)
         {
             _serviceService = serviceService;
             _fileService = fileService;
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -27,7 +30,7 @@ namespace Service_Booking_Platform.Controllers
 
             return Ok(services);
         }
-
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -35,16 +38,24 @@ namespace Service_Booking_Platform.Controllers
 
             return Ok(srevice); 
         }
-
+        [Authorize(Roles = AppRoles.Provider )]
         [HttpPost]
-        public async Task<IActionResult> CreateSrvice([FromForm] ServiceCreateDto dto)
+        public async Task<IActionResult> CreateService([FromForm] ServiceCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var service = await _serviceService.CreateAsync(dto);
-            return Ok(service);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+           if(userId == null)
+            {
+                return Unauthorized();
+            }   
+
+            var service = await _serviceService.CreateAsync(dto,userId);
+            return CreatedAtAction(nameof(GetById), new { id = service.Id }, service);
         }
 
+
+        [Authorize(Roles = $"{AppRoles.Admin}, {AppRoles.Provider}" )]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateService(int  id,[FromForm] ServiceUpdateDto dto)
         {
@@ -52,16 +63,24 @@ namespace Service_Booking_Platform.Controllers
             {
                 return BadRequest("ID mismatch between URL and body.");
             }
-            var service= await _serviceService.UpdateAsync(id, dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(userId==null)
+                return Unauthorized();
+
+            var service= await _serviceService.UpdateAsync(id,dto,userId);
 
             return NoContent();
         }
-        [HttpDelete]
+        [Authorize(Roles = "Provider,Admin,SuperAdmin")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Deleteservice(int id)
         {
-            var service= await _serviceService.DeleteAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+            var service= await _serviceService.DeleteAsync(id,userId);
 
-            return Ok();
+            return NoContent();
         }
 
 

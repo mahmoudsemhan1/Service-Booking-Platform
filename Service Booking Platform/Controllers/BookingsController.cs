@@ -3,8 +3,10 @@ using Application.Interfaces.Services.BookingService;
 using AutoMapper;
 using Domain.Interfaces.UnitofWork;
  using Infrastructure.UnitOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Service_Booking_Platform.Controllers
@@ -29,30 +31,34 @@ namespace Service_Booking_Platform.Controllers
             var booking = await _bookingService.GetAllAsync(filterDto);
             return Ok(booking);
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var booking = await _unitofWork.Bookings.GetAllAsync() ;
-            return Ok(booking);
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var booking = await _unitofWork.Bookings.GetAllAsync() ;
+        //    return Ok(booking);
+        //}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var booking=await _bookingService.GetByIdAsync(id);
             return Ok(booking);
         }
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> CreatBooking([FromBody] BookingCreateDto bookingdto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var createdBooking = await _bookingService.CreateAsync(bookingdto);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if(userId==null) return BadRequest(ModelState);
+
+                var createdBooking = await _bookingService.CreateAsync(bookingdto,userId);
                 return CreatedAtAction(nameof(GetById), new { id = createdBooking.Id }, createdBooking);
             }
-            catch (Exception )
+            catch (Exception ex )
             {
-                return StatusCode(500, "An error occurred while creating the booking.");
+                return BadRequest(new {message=ex.Message});
             }
 
 
@@ -74,6 +80,7 @@ namespace Service_Booking_Platform.Controllers
             return NoContent();
         }
         [HttpPost("{id}/confirm")]
+        [Authorize(Roles = "Provider")]
         public async Task<IActionResult> Confirm(int id)
         {
             var success = await _bookingService.ConfirmAsync(id);
@@ -88,6 +95,7 @@ namespace Service_Booking_Platform.Controllers
         }
 
         [HttpPost("{id}/complete")]
+        [Authorize(Roles = "Provider")]
         public async Task<IActionResult> Complete(int id)
         {
             var success = await _bookingService.CompleteAsync(id);

@@ -11,9 +11,9 @@ namespace Application.Interfaces.Services.IServices
     {
         Task<IEnumerable<ServiceReadDto>> GetAllAsync();
         Task<ServiceReadDto?> GetByIdAsync(int id);
-        Task<ServiceReadDto> CreateAsync(ServiceCreateDto dto);
-        Task<ServiceReadDto> UpdateAsync(int id, ServiceUpdateDto dto);
-        Task<bool> DeleteAsync(int id);
+        Task<ServiceReadDto> CreateAsync(ServiceCreateDto dto ,string userId);
+        Task<ServiceReadDto> UpdateAsync(int id, ServiceUpdateDto dto,string userId);
+        Task<bool> DeleteAsync(int id,string userId);
 
     }
 }
