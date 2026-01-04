@@ -36,7 +36,6 @@ namespace Service_Booking_Platform.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // change role format to have first letter uppercase and rest lowercase (e.g., "user" -> "User")
             var requestedRole = AppRoles.RegistrationRoles
@@ -93,18 +92,17 @@ namespace Service_Booking_Platform.Controllers
                     IsSuccess: true
                 ));
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 // in case of any error, rollback the transaction
                 await _unitofWork.RollbackTransactionAsync();
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                 throw;
             }
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            if (loginDto == null)
-                return BadRequest("Invalid login data.");
+            
             var existingUser = await _userManager.FindByEmailAsync(loginDto.Email);
             if (existingUser == null || !await _userManager.CheckPasswordAsync(existingUser, loginDto.Password))
                 return Unauthorized("Invalid login attempt.");
@@ -119,7 +117,6 @@ namespace Service_Booking_Platform.Controllers
         [HttpPost("create-user")]
         public async Task<IActionResult> SuperCreateUser([FromBody] RegisterDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var allRoles = new List<string> { AppRoles.SuperAdmin, AppRoles.Admin, AppRoles.User, AppRoles.Provider };
 
@@ -165,10 +162,10 @@ namespace Service_Booking_Platform.Controllers
 
                 return Ok(new { message = $"Account with role '{requestedRole}' created successfully." });
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 await _unitofWork.RollbackTransactionAsync();
-                return StatusCode(500, $"Internal error: {ex.Message}");
+                throw;
             }
         }
 
@@ -240,10 +237,10 @@ namespace Service_Booking_Platform.Controllers
                 return Ok(new { message = "User deleted successfully." });
 
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 await _unitofWork.RollbackTransactionAsync();
-                return StatusCode(500, $"Internal error: {ex.Message}");
+                throw;
             }
         }
         // Google Authentication Endpoints
@@ -330,10 +327,10 @@ namespace Service_Booking_Platform.Controllers
                     IsSuccess: true
                 ));
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 await _unitofWork.RollbackTransactionAsync();
-                return StatusCode(500, $"Internal error during Google auth: {ex.Message}");
+                throw;
             }
         }
 

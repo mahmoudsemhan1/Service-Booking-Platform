@@ -1,14 +1,10 @@
 ﻿using Application.DTOs.Booking;
 using Application.Interfaces.Services.BookingService;
-using AutoMapper;
 using Domain.Constants;
 using Domain.Interfaces.UnitofWork;
- using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Service_Booking_Platform.Controllers
 {
@@ -17,13 +13,11 @@ namespace Service_Booking_Platform.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly IBookingService _bookingService;
-        private readonly IUnitofWork _unitofWork;
 
-        public BookingsController( IBookingService bookingService, IUnitofWork unitofWork)
+        public BookingsController(IBookingService bookingService)
         {
-           
+
             _bookingService = bookingService;
-            _unitofWork = unitofWork;
         }
 
         [HttpGet("Filter")]
@@ -42,8 +36,8 @@ namespace Service_Booking_Platform.Controllers
         [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
-            var booking=await _bookingService.GetByIdAsync(id);
-            if(booking==null) 
+            var booking = await _bookingService.GetByIdAsync(id);
+            if (booking == null)
                 return NotFound();
             return Ok(booking);
         }
@@ -54,20 +48,13 @@ namespace Service_Booking_Platform.Controllers
             // if (!ModelState.IsValid) return BadRequest(ModelState);  => ModelState.IsValid automatic check in api controller 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
-            try
-            {
-                
-                var createdBooking = await _bookingService.CreateAsync(bookingdto,userId);
-                return CreatedAtAction(nameof(GetById), new { id = createdBooking.Id }, createdBooking);
-            }
-            catch (Exception ex )
-            {
-                return BadRequest(new {message=ex.Message});
-            }
-
-
+            var createdBooking = await _bookingService.CreateAsync(bookingdto, userId);
+            return CreatedAtAction(nameof(GetById), new { id = createdBooking.Id }, createdBooking);
         }
-        [Authorize(Roles =AppRoles.Provider)]
+
+
+        
+        [Authorize(Roles = AppRoles.Provider)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] BookingUpdateDto bookingdto)
         {
@@ -75,34 +62,18 @@ namespace Service_Booking_Platform.Controllers
             var booking = await _bookingService.UpdateAsync(id, bookingdto);
 
             return Ok(booking);
-        
+
         }
         [HttpDelete("{id}")]
-        [Authorize (Roles = $"{AppRoles.User} , {AppRoles.Admin}")]
+        [Authorize(Roles = $"{AppRoles.User} , {AppRoles.Admin}")]
         public async Task<IActionResult> Delete(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userRole = User.FindFirstValue(ClaimTypes.Role);
 
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            await _bookingService.DeleteAsync(id, userId!, userRole!);
 
-            try
-            {
-                await _bookingService.DeleteAsync(id, userId, userRole);
-                return NoContent();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
         }
         [HttpPost("{id}/confirm")]
         [Authorize(Roles = AppRoles.Provider)]
@@ -112,15 +83,10 @@ namespace Service_Booking_Platform.Controllers
 
             if (string.IsNullOrEmpty(providerUserId)) return Unauthorized();
 
-            try
-            {
                 var success = await _bookingService.ConfirmAsync(id, providerUserId);
                 return success ? NoContent() : BadRequest(new { message = "Booking cannot be confirmed." });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
+      
+           
         }
 
         [HttpPost("{id}/cancel")]
@@ -130,21 +96,11 @@ namespace Service_Booking_Platform.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userRole = User.FindFirstValue(ClaimTypes.Role);
 
-            try
-            {
-                var success = await _bookingService.CancelAsync(id, userId, userRole);
+          
+                var success = await _bookingService.CancelAsync(id, userId!, userRole!);
                 if (!success) return BadRequest(new { message = "Booking cannot be cancelled in its current state." });
 
-                return NoContent();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
         }
 
         [HttpPost("{id}/complete")]
@@ -152,20 +108,9 @@ namespace Service_Booking_Platform.Controllers
         public async Task<IActionResult> Complete(int id)
         {
             var providerUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            try
-            {
-                var success = await _bookingService.CompleteAsync(id, providerUserId);
+                var success = await _bookingService.CompleteAsync(id, providerUserId!);
                 return success ? NoContent() : BadRequest(new { message = "Booking cannot be completed." });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+  
         }
 
     }

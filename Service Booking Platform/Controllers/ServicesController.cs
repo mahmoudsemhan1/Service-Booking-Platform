@@ -42,8 +42,7 @@ namespace Service_Booking_Platform.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateService([FromForm] ServiceCreateDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+               
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
            if(userId == null)
             {
@@ -71,7 +70,7 @@ namespace Service_Booking_Platform.Controllers
 
             return NoContent();
         }
-        [Authorize(Roles = "Provider,Admin,SuperAdmin")]
+        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.SuperAdmin},{AppRoles.Provider}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deleteservice(int id)
         {
