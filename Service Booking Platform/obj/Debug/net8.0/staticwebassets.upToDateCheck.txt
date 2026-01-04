@@ -1,6 +1,0 @@
-wwwroot\services\0181160c-4375-45f2-8515-410ec025b41b.png
-wwwroot\services\1bf7321d-b8e8-4b2e-8e72-6ae975445695.png
-wwwroot\services\3fdf7d2d-84e5-4f24-9f8a-105c26252a74.png
-wwwroot\services\45fe2f85-2ed1-4d6b-95da-6b1ca63a64c2.jpg
-wwwroot\services\646912d3-3b5e-4357-9b69-4d1065d10959.png
-wwwroot\services\852ff8fd-3733-4207-be00-b2101cefa970.jpg
