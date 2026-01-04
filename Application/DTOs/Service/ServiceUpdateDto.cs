@@ -12,7 +12,8 @@ namespace Application.DTOs.Service
         public int Id { get; set; } 
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
+        public decimal DiscountedPrice { get; set; } 
         public int? DurationMinutes { get; set; }
         //for adding new images
         public List<IFormFile>? NewImageFiles { get; set; }

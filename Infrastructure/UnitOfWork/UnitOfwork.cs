@@ -25,6 +25,7 @@ namespace Infrastructure.UnitOfWork
             Services = new ServiceRepository(_context);
             Providers = new ProviderRepository(_context);
             UserProfiles = new GenericRepository<UserProfile>(_context);
+
         }
 
         public IGenericRepository<Review> Reviews { get; }

@@ -6,12 +6,15 @@ namespace Domain.Interfaces.Repositories
     public interface IBookingRepository:IGenericRepository<Booking>
     {
 
-        Task<IEnumerable<Booking>> GetAsync(int? providerId,
+        Task<IEnumerable<Booking>> GetAsync(
+            int? providerId,
         int? serviceId,
         BookingStatus? status,
         DateTime? fromDate,
         DateTime? toDate);
-       
+
+        Task<Booking?> GetByIdWithDetailsAsync(int id);
+
 
 
     }

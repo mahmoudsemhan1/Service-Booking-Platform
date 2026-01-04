@@ -51,5 +51,15 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
 
         }
+
+        public async Task<Booking?> GetByIdWithDetailsAsync(int id)
+        {
+          return await _context.Bookings
+                .Include(b=> b.Service)
+                .Include(b=> b.Provider)
+                .Include(b=>b.Payment)
+                .FirstOrDefaultAsync(b=>b.Id == id);
+        }
     }
+
 }

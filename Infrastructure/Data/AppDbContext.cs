@@ -135,7 +135,7 @@ namespace Infrastructure.Data
                 .HasOne(p => p.Booking)
                 .WithOne(b => b.Payment)
                 .HasForeignKey<Payment>(p => p.BookingId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Review -> Provider
             builder.Entity<Review>()
@@ -149,7 +149,7 @@ namespace Infrastructure.Data
             // =======================
 
             builder.Entity<UserProfile>().HasQueryFilter(x => !x.IsDeleted);
-            builder.Entity<Provider>().HasQueryFilter(x => !x.IsDeleted);
+            builder.Entity<Provider>().HasQueryFilter(x => !x.IsDeleted && x.IsActive);
             builder.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
             builder.Entity<ProviderService>().HasQueryFilter(x => !x.IsDeleted);
             builder.Entity<Booking>().HasQueryFilter(x => !x.IsDeleted);
@@ -159,6 +159,14 @@ namespace Infrastructure.Data
             // =======================
             // Precision Configurations
             // =======================
+
+            builder.Entity<ProviderService>()
+                .Property(ps => ps.Price)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Entity<ProviderService>()
+                .Property(ps => ps.DiscountedPrice)
+                .HasColumnType("decimal(18,2)");
 
             builder.Entity<Service>()
                 .Property(s => s.BasePrice)

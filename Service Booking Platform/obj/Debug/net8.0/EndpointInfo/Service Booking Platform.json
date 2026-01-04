@@ -643,10 +643,10 @@
         }
       }
     },
-    "/api/Servicies": {
+    "/api/Services": {
       "get": {
         "tags": [
-          "Servicies"
+          "Services"
         ],
         "responses": {
           "200": {
@@ -656,7 +656,7 @@
       },
       "post": {
         "tags": [
-          "Servicies"
+          "Services"
         ],
         "requestBody": {
           "content": {
@@ -723,10 +723,10 @@
         }
       }
     },
-    "/api/Servicies/{id}": {
+    "/api/Services/{id}": {
       "get": {
         "tags": [
-          "Servicies"
+          "Services"
         ],
         "parameters": [
           {
@@ -747,7 +747,7 @@
       },
       "put": {
         "tags": [
-          "Servicies"
+          "Services"
         ],
         "parameters": [
           {
@@ -777,6 +777,10 @@
                     "type": "string"
                   },
                   "Price": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "DiscountedPrice": {
                     "type": "number",
                     "format": "double"
                   },
@@ -819,6 +823,9 @@
                 "Price": {
                   "style": "form"
                 },
+                "DiscountedPrice": {
+                  "style": "form"
+                },
                 "DurationMinutes": {
                   "style": "form"
                 },
@@ -843,7 +850,7 @@
       },
       "delete": {
         "tags": [
-          "Servicies"
+          "Services"
         ],
         "parameters": [
           {

@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Booking;
 using Application.Interfaces.Services.BookingService;
 using AutoMapper;
+using Domain.Constants;
 using Domain.Interfaces.UnitofWork;
  using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,7 @@ namespace Service_Booking_Platform.Controllers
             _unitofWork = unitofWork;
         }
 
-        [HttpGet("Fileter")]
+        [HttpGet("Filter")]
         public async Task<IActionResult> GetAll([FromQuery] BookingFilterDto filterDto)
         {
             var booking = await _bookingService.GetAllAsync(filterDto);
@@ -38,21 +39,24 @@ namespace Service_Booking_Platform.Controllers
         //    return Ok(booking);
         //}
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             var booking=await _bookingService.GetByIdAsync(id);
+            if(booking==null) 
+                return NotFound();
             return Ok(booking);
         }
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = AppRoles.User)]
         [HttpPost]
         public async Task<IActionResult> CreatBooking([FromBody] BookingCreateDto bookingdto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            // if (!ModelState.IsValid) return BadRequest(ModelState);  => ModelState.IsValid automatic check in api controller 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
             try
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if(userId==null) return BadRequest(ModelState);
-
+                
                 var createdBooking = await _bookingService.CreateAsync(bookingdto,userId);
                 return CreatedAtAction(nameof(GetById), new { id = createdBooking.Id }, createdBooking);
             }
@@ -63,6 +67,7 @@ namespace Service_Booking_Platform.Controllers
 
 
         }
+        [Authorize(Roles =AppRoles.Provider)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] BookingUpdateDto bookingdto)
         {
@@ -73,33 +78,94 @@ namespace Service_Booking_Platform.Controllers
         
         }
         [HttpDelete("{id}")]
+        [Authorize (Roles = $"{AppRoles.User} , {AppRoles.Admin}")]
         public async Task<IActionResult> Delete(int id)
         {
-             await _bookingService.DeleteAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
 
-            return NoContent();
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            try
+            {
+                await _bookingService.DeleteAsync(id, userId, userRole);
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPost("{id}/confirm")]
-        [Authorize(Roles = "Provider")]
+        [Authorize(Roles = AppRoles.Provider)]
         public async Task<IActionResult> Confirm(int id)
         {
-            var success = await _bookingService.ConfirmAsync(id);
-            return success ? NoContent() : NotFound();
+            var providerUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(providerUserId)) return Unauthorized();
+
+            try
+            {
+                var success = await _bookingService.ConfirmAsync(id, providerUserId);
+                return success ? NoContent() : BadRequest(new { message = "Booking cannot be confirmed." });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
         }
 
         [HttpPost("{id}/cancel")]
+        [Authorize]
         public async Task<IActionResult> Cancel(int id)
         {
-            var success = await _bookingService.CancelAsync(id);
-            return success ? NoContent() : NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+
+            try
+            {
+                var success = await _bookingService.CancelAsync(id, userId, userRole);
+                if (!success) return BadRequest(new { message = "Booking cannot be cancelled in its current state." });
+
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("{id}/complete")]
-        [Authorize(Roles = "Provider")]
+        [Authorize(Roles = AppRoles.Provider)]
         public async Task<IActionResult> Complete(int id)
         {
-            var success = await _bookingService.CompleteAsync(id);
-            return success ? NoContent() : NotFound();
+            var providerUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            try
+            {
+                var success = await _bookingService.CompleteAsync(id, providerUserId);
+                return success ? NoContent() : BadRequest(new { message = "Booking cannot be completed." });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
     }

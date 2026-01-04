@@ -12,6 +12,8 @@ namespace Domain.Interfaces.UnitofWork
     {
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
+
+        IGenericRepository<ProviderService> ProviderServices { get; }
         IGenericRepository<UserProfile> UserProfiles { get; }
         IBookingRepository Bookings { get; }
         IPaymentRepository Payments { get; }

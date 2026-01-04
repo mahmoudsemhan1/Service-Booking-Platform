@@ -405,9 +405,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
+    "ContainingType": "Service_Booking_Platform.Controllers.ServicesController",
     "Method": "GetAll",
-    "RelativePath": "api/Servicies",
+    "RelativePath": "api/Services",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -415,9 +415,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
-    "Method": "CreateSrvice",
-    "RelativePath": "api/Servicies",
+    "ContainingType": "Service_Booking_Platform.Controllers.ServicesController",
+    "Method": "CreateService",
+    "RelativePath": "api/Services",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -456,9 +456,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
+    "ContainingType": "Service_Booking_Platform.Controllers.ServicesController",
     "Method": "GetById",
-    "RelativePath": "api/Servicies/{id}",
+    "RelativePath": "api/Services/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -472,9 +472,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
+    "ContainingType": "Service_Booking_Platform.Controllers.ServicesController",
     "Method": "UpdateService",
-    "RelativePath": "api/Servicies/{id}",
+    "RelativePath": "api/Services/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -501,7 +501,12 @@
       },
       {
         "Name": "Price",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.Decimal",
+        "IsRequired": false
+      },
+      {
+        "Name": "DiscountedPrice",
+        "Type": "System.Decimal",
         "IsRequired": false
       },
       {
@@ -528,9 +533,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Service_Booking_Platform.Controllers.ServiciesController",
+    "ContainingType": "Service_Booking_Platform.Controllers.ServicesController",
     "Method": "Deleteservice",
-    "RelativePath": "api/Servicies/{id}",
+    "RelativePath": "api/Services/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

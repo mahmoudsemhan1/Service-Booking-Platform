@@ -75,7 +75,7 @@ namespace Service_Booking_Platform.Controllers
                 };
                 await _unitofWork.UserProfiles.AddAsync(userProfile);
 
-                if (requestedRole == "Provider")
+                if (requestedRole == AppRoles.Provider)
                 {
                     await _unitofWork.Providers.AddAsync(new Provider(user.Id, dto.FullName));
                 }
@@ -156,7 +156,7 @@ namespace Service_Booking_Platform.Controllers
                 var userProfile = new UserProfile { UserId = user.Id, Bio = dto.bio ?? "Created by Admin" };
                 await _unitofWork.UserProfiles.AddAsync(userProfile);
 
-                if (requestedRole == "Provider")
+                if (requestedRole == AppRoles.Provider)
                 {
                     await _unitofWork.Providers.AddAsync(new Provider(user.Id, dto.FullName));
                 }
