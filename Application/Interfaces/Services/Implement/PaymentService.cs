@@ -4,6 +4,7 @@ using AutoMapper;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
 using Domain.Models.Enum;
+using Stripe;
 using Stripe.Checkout;
 
 namespace Application.Interfaces.Services.Implement
@@ -89,11 +90,32 @@ namespace Application.Interfaces.Services.Implement
         }
         public async Task RefundAsync(int paymentId)
         {
+
             var payment = await _unitofWork.Payments.GetByIdAsync(paymentId);
             if (payment == null)
                 throw new KeyNotFoundException($"Payment with ID {paymentId} not found.");
-            payment.Refund();
-            await _unitofWork.CompleteAsync();
+            if (payment.Status != PaymentStatus.Success)
+                throw new InvalidOperationException("Only successful payments can be refunded.");
+
+            // Call Stripe API to process the refund
+            var options = new RefundCreateOptions
+            {
+                PaymentIntent = payment.TransactionId, 
+                Reason = RefundReasons.RequestedByCustomer
+            };
+            var service = new RefundService();
+
+            try
+            {
+                await service.CreateAsync(options);
+                payment.Refund();
+
+                await _unitofWork.CompleteAsync();
+            }
+            catch (StripeException e)
+            {
+                throw new Exception($"Refund Failed: {e.StripeError.Message}");
+            }
         }
 
         public async Task<string> CreateCheckoutSessionAsync(int bookingId, string userId)
@@ -145,7 +167,7 @@ namespace Application.Interfaces.Services.Implement
             //-4  record the payment in the database in "pening"
             // wait the wehook to comfirm it 
 
-            var payment = new Payment(bookingId, userId, booking.TotalPrice,PaymentMethod.Card);
+            var payment = new Payment(bookingId, userId, booking.TotalPrice,Domain.Models.Enum.PaymentMethod.Card);
             payment.MarkAsSuccess(session.Id);
             await _unitofWork.Payments.AddAsync(payment);
             await _unitofWork.CompleteAsync();
@@ -158,17 +180,23 @@ namespace Application.Interfaces.Services.Implement
 
         public async Task HandlePaymentSuccessAsync(string sessionId)
         {
-            // by using the seeionid find the payment 
-            var payment = await _unitofWork.Payments.GetByTransactionIdAsync(sessionId);
-            if(payment==null)
+            // Retrieve the session from Stripe to get payment details
+            var service = new SessionService();
+            var session = await service.GetAsync(sessionId);
+            var paymentIntentId = session.PaymentIntentId;
+            // get the booking id from metadat
+            var bookingId = int.Parse(session.Metadata["BookingId"]);
+
+            var payment = await _unitofWork.Payments.GetByIdAsync(bookingId); 
+            if (payment==null)
                 throw new KeyNotFoundException("Payment record not found for this session.");
             //using the MarkAsSuccess
 
-            payment.MarkAsSuccess(sessionId, "verified by strip webhook ");
+            payment.MarkAsSuccess(sessionId, $"Stripe Session: {sessionId}");
             // update the status of booking  
             
 
-            var booking = await _unitofWork.Bookings.GetByIdAsync(payment.BookingId.Value);
+            var booking = await _unitofWork.Bookings.GetByIdAsync(bookingId);
             if (booking != null)
             {
                 booking.Confirm();
