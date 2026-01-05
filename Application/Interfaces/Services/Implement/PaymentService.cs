@@ -1,14 +1,14 @@
 ﻿
 using Application.DTOs.Payment;
-using Application.Interfaces.Services.IPaymentService;
 using AutoMapper;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
 using Domain.Models.Enum;
+using Stripe.Checkout;
 
 namespace Application.Interfaces.Services.Implement
 {
-    public class PaymentService : Application.Interfaces.Services.IPaymentService.IPaymentService
+    public class PaymentService : IPaymentService.IPaymentService
     {
         private readonly IUnitofWork _unitofWork;
         private readonly IMapper _mapper;
@@ -31,21 +31,33 @@ namespace Application.Interfaces.Services.Implement
             return paymrnt == null ? null : _mapper.Map<PaymentReadDto>(paymrnt);
         }
 
-        public async Task<PaymentReadDto> CreateAsync(PaymentCreateDto dto)
+        public async Task<PaymentReadDto> CreateAsync(PaymentCreateDto dto, string userId)
         {
+            //first check if booking exists ,and belongs to the user
+            var booking = await _unitofWork.Bookings.GetByIdAsync(dto.BookingId);
+            if (booking == null || booking.UserId != userId)
+                throw new KeyNotFoundException("Booking not found or does not belong to the user.");
+            if (booking.UserId != userId)
+                throw new UnauthorizedAccessException("You are not authorized to make a payment for this booking.");
+
+
             var payment = _mapper.Map<Payment>(dto);
+
             await _unitofWork.Payments.AddAsync(payment);
             await _unitofWork.CompleteAsync();
+
             return _mapper.Map<PaymentReadDto>(payment);
 
         }
-        public async Task<bool> MarkAsSuccessAsync(PaymentUpdateStatusDto dto)
+        public async Task MarkAsSuccessAsync(PaymentUpdateStatusDto dto)
         {
             // Handles payment success coming from payment gateway (Webhook)
 
             var payment = await _unitofWork.Payments.GetByTransactionIdAsync(dto.TransactionId);
-            if (payment == null) return false;
+            if (payment == null)
+                throw new KeyNotFoundException($"Payment with Transaction ID {dto.TransactionId} not found.");
 
+            //this for do the logic in mobile
             payment.MarkAsSuccess(dto.TransactionId, dto.RawResponse);
 
             //Load related booking
@@ -56,35 +68,113 @@ namespace Application.Interfaces.Services.Implement
                 .GetByIdAsync(payment.BookingId.Value);
 
             if (booking == null)
-                throw new Exception("Booking not found for this payment");
+                throw new KeyNotFoundException("Linked booking was not found.");
 
             //  Complete booking (Domain Logic)
-            if(booking.Status==BookingStatus.Confirmed)
-            booking.Complete();
+            if (booking.Status == BookingStatus.Confirmed)
+                booking.Complete();
 
             await _unitofWork.CompleteAsync();
-            return true;
         }
 
-        public async Task<bool> MarkAsFailedAsync(PaymentUpdateStatusDto dto)
+        public async Task MarkAsFailedAsync(PaymentUpdateStatusDto dto)
         {
             var payment = await _unitofWork.Payments.GetByTransactionIdAsync(dto.TransactionId);
-            if (payment == null) return false;
+            if (payment == null)
+                throw new KeyNotFoundException($"Payment with Transaction ID {dto.TransactionId} not found.");
 
             payment.MarkAsFailed(dto.RawResponse);
             await _unitofWork.CompleteAsync();
-            return true;
-
 
         }
-        public async Task<bool> RefundAsync(int paymentId)
+        public async Task RefundAsync(int paymentId)
         {
             var payment = await _unitofWork.Payments.GetByIdAsync(paymentId);
-            if (payment == null) return false;
-
+            if (payment == null)
+                throw new KeyNotFoundException($"Payment with ID {paymentId} not found.");
             payment.Refund();
             await _unitofWork.CompleteAsync();
-            return true;
+        }
+
+        public async Task<string> CreateCheckoutSessionAsync(int bookingId, string userId)
+        {
+            // 1- Validate booking exists and belongs to user 
+            var booking = await _unitofWork.Bookings.GetByIdAsync(bookingId);
+            if (booking == null || booking.UserId != userId)
+                throw new KeyNotFoundException("Booking not found or does not belong to the user.");
+            if (booking.UserId != userId)
+                throw new UnauthorizedAccessException("You are not authorized to make a payment for this booking.");
+
+            //2- Create Stripe Checkout Session
+            //  Stripe options and session creation logic would go here.
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "Card" },
+                Mode = "Payment",
+                SuccessUrl = "https://frontend.com/success?session_id={CHECKOUT_SESSION_ID}",
+                CancelUrl = "https://frontend.com/cancel",
+                //this the metadata that will be reurun to us in the webhook
+                Metadata = new Dictionary<string, string>
+                {
+                      { "BookingId", bookingId.ToString() },
+                      { "UserId", userId }
+                },
+                //this the detailes the user will see it 
+                LineItems = new List<SessionLineItemOptions>
+                {
+                    new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount=(long)(booking.TotalPrice *100),
+                            Currency="USD",
+                            ProductData= new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name= "Service booking payment",
+                                Description=$"Payment for Booking {bookingId}"
+                            },  
+                        },
+                        Quantity=1,
+                    },
+                },
+            };
+            //-3 ask the strip to create the session 
+            var service = new SessionService();
+            Session session = await service.CreateAsync(options);
+
+            //-4  record the payment in the database in "pening"
+            // wait the wehook to comfirm it 
+
+            var payment = new Payment(bookingId, userId, booking.TotalPrice,PaymentMethod.Card);
+            payment.MarkAsSuccess(session.Id);
+            await _unitofWork.Payments.AddAsync(payment);
+            await _unitofWork.CompleteAsync();
+            //5- Return session URL or ID and this the goool of this method
+
+            return session.Url;
+        }
+
+
+
+        public async Task HandlePaymentSuccessAsync(string sessionId)
+        {
+            // by using the seeionid find the payment 
+            var payment = await _unitofWork.Payments.GetByTransactionIdAsync(sessionId);
+            if(payment==null)
+                throw new KeyNotFoundException("Payment record not found for this session.");
+            //using the MarkAsSuccess
+
+            payment.MarkAsSuccess(sessionId, "verified by strip webhook ");
+            // update the status of booking  
+            
+
+            var booking = await _unitofWork.Bookings.GetByIdAsync(payment.BookingId.Value);
+            if (booking != null)
+            {
+                booking.Confirm();
+            }
+            await _unitofWork.CompleteAsync();
+
         }
     }
 }

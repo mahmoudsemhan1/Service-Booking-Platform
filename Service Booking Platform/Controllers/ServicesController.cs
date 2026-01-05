@@ -15,12 +15,10 @@ namespace Service_Booking_Platform.Controllers
     public class ServicesController : ControllerBase
     {
         private readonly IServiceService _serviceService;
-        private readonly IFileService _fileService;
 
-        public ServicesController(IServiceService serviceService, IFileService fileService)
+        public ServicesController(IServiceService serviceService)
         {
             _serviceService = serviceService;
-            _fileService = fileService;
         }
         [AllowAnonymous]
         [HttpGet]

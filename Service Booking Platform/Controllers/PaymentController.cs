@@ -1,58 +1,55 @@
 ﻿using Application.DTOs.Payment;
 using Application.Interfaces.Services.IPaymentService;
-using Microsoft.AspNetCore.Http;
+using Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-namespace Service_Booking_Platform.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class PaymentController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PaymentController : ControllerBase
+    private readonly IPaymentService _paymentService;
+    public PaymentController(IPaymentService paymentService) => _paymentService = paymentService;
+
+    [HttpGet]
+    [Authorize(Roles = AppRoles.Admin)]
+    public async Task<IActionResult> GetAllPayments()
     {
-        private readonly IPaymentService _paymentService;
+        var payments = await _paymentService.GetAllAsync();
+        return Ok(payments);
+    }
 
-        public PaymentController(IPaymentService paymentService)
-        {
-            _paymentService = paymentService;
-        }
+    [HttpGet("{paymentId}")]
+    [Authorize]
+    public async Task<IActionResult> GetPaymentById(int paymentId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllPayments()
-        {
-            var Payments = await _paymentService.GetAllAsync();
-            if (Payments == null)
-                return NotFound();
-            return Ok(Payments);
+        var payment = await _paymentService.GetByIdAsync(paymentId);
 
-        }
-        [HttpGet("{paymentId}")]
-        public async Task<IActionResult> GetPaymentById(int paymentId)
-        {
-            var payment = await _paymentService.GetByIdAsync(paymentId);
-            if (payment == null) return NotFound();
+        if (payment == null)
+            throw new KeyNotFoundException($"Payment with ID {paymentId} not found.");
 
-            return Ok(payment);
-        }
-        [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        return Ok(payment);
+    }
 
-            var payment = await _paymentService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetPaymentById), new { paymentId = payment.Id }, payment);
+    [HttpPost("checkout")]
+    [Authorize]
+    public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        }
-       
+        var payment = await _paymentService.CreateAsync(dto, userId!);
 
-        [HttpPost("{paymentId}/refund")]
-        public async Task<IActionResult> RefundPayment(int paymentId)
-        {
-            var result = await _paymentService.RefundAsync(paymentId);
-            if (!result) return NotFound();
-            return Ok();
-        }
+        return CreatedAtAction(nameof(GetPaymentById), new { paymentId = payment.Id }, payment);
+    }
 
-
+    [HttpPost("{paymentId}/refund")]
+    [Authorize(Roles = AppRoles.Admin)]
+    public async Task<IActionResult> RefundPayment(int paymentId)
+    {
+        await _paymentService.RefundAsync(paymentId);
+        return Ok(new { Message = "Refund processed successfully." });
     }
 }

@@ -31,6 +31,7 @@ namespace Domain.Models
             UserId = userId;
             Amount = amount;
           Status = PaymentStatus.Pending;
+            method = Method;
         }
 
 
@@ -60,6 +61,7 @@ namespace Domain.Models
 
             Status = PaymentStatus.Refunded;
         }
+       
 
 
     }

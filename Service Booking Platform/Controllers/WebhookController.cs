@@ -2,37 +2,42 @@
 using Application.Interfaces.Services.IPaymentService;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Service_Booking_Platform.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class WebhookController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class WebhookController : ControllerBase
+    private readonly IPaymentService _paymentService;
+
+    public WebhookController(IPaymentService paymentService)
     {
+        _paymentService = paymentService;
+    }
 
-        private readonly IPaymentService _paymentService;
+    [HttpPost("stripe-success")] 
+    public async Task<IActionResult> MarkAsSuccess([FromBody] PaymentUpdateStatusDto dto)
+    {
+        // 1. استدعاء الميثود مباشرة
+        // 2. الـ Service ستتأكد من وجود الدفعة وتحديث الحجز
+        // 3. لو الدفعة مش موجودة، الـ Middleware سيرد بـ 404
+        await _paymentService.MarkAsSuccessAsync(dto);
 
-        public WebhookController(IPaymentService paymentService)
+        // 4. دائماً نرجع رد JSON منظم
+        return Ok(new
         {
-            _paymentService = paymentService;
-        }
+            Message = "Payment confirmed and booking completed successfully.",
+            Timestamp = DateTime.UtcNow
+        });
+    }
 
-        [HttpPost("success")]
-        public async Task<IActionResult> MarkAsSuccess([FromBody] PaymentUpdateStatusDto dto)
+    [HttpPost("stripe-failed")]
+    public async Task<IActionResult> MarkAsFailed([FromBody] PaymentUpdateStatusDto dto)
+    {
+        await _paymentService.MarkAsFailedAsync(dto);
+
+        return Ok(new
         {
-            var result = await _paymentService.MarkAsSuccessAsync(dto);
-            if (!result) return NotFound();
-
-
-            return Ok("Payment marked as success and booking completed");
-        }
-
-        [HttpPost("failed")]
-        public async Task<IActionResult> MarkAsFailed([FromBody] PaymentUpdateStatusDto dto)
-        {
-            var result = await _paymentService.MarkAsFailedAsync(dto);
-            if (!result) return NotFound("Payment Not found");
-
-            return Ok("Payment marked as failed");
-        }
+            Message = "Payment failure recorded.",
+            Timestamp = DateTime.UtcNow
+        });
     }
 }
