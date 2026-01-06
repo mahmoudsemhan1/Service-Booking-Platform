@@ -14,6 +14,7 @@ namespace Domain.Models
         public int ServiceId { get; private set; }
         public int ProviderId { get; private set; }
         public string UserId { get; private set; } = null!;//FK 
+        
         public BookingStatus Status { get; private set; }=BookingStatus.Pending;
         private Booking() { } // EF Core
 
@@ -29,7 +30,10 @@ namespace Domain.Models
         public void Confirm()
         {
             if (Status != BookingStatus.Pending)
-                throw new InvalidOperationException("Booking cannot be confirmed.");
+            {
+                // هيقولك الحالة الحالية كام اللي منعته
+                throw new InvalidOperationException($"Cannot confirm. Current status is: {Status}");
+            }
 
             Status = BookingStatus.Confirmed;
         }

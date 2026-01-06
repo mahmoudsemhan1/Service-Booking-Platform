@@ -34,8 +34,7 @@ namespace ServiceBooking.Api.Middlewares
             context.Response.ContentType = "application/json";
 
             var statusCode = (int)HttpStatusCode.InternalServerError;
-            var message = "An unexpected error occurred on the server.";
-
+            var message = _env.IsDevelopment() ? ex.Message : "An unexpected error occurred on the server.";
             // Map specific exceptions to HTTP Status Codes
             switch (ex)
             {

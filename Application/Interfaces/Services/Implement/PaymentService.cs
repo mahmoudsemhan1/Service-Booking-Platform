@@ -44,8 +44,17 @@ namespace Application.Interfaces.Services.Implement
 
             var payment = _mapper.Map<Payment>(dto);
 
-            await _unitofWork.Payments.AddAsync(payment);
-            await _unitofWork.CompleteAsync();
+            try
+            {
+                await _unitofWork.Payments.AddAsync(payment);
+                await _unitofWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                // ده هيطلعلك السبب الحقيقي في الـ Response
+                var message = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception($"Database Error: {message}");
+            }
 
             return _mapper.Map<PaymentReadDto>(payment);
 
@@ -131,8 +140,8 @@ namespace Application.Interfaces.Services.Implement
             //  Stripe options and session creation logic would go here.
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "Card" },
-                Mode = "Payment",
+                PaymentMethodTypes = new List<string> { "card" },
+                Mode = "payment",
                 SuccessUrl = "https://frontend.com/success?session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = "https://frontend.com/cancel",
                 //this the metadata that will be reurun to us in the webhook
@@ -149,7 +158,7 @@ namespace Application.Interfaces.Services.Implement
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount=(long)(booking.TotalPrice *100),
-                            Currency="USD",
+                            Currency="usd",
                             ProductData= new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name= "Service booking payment",
@@ -168,8 +177,7 @@ namespace Application.Interfaces.Services.Implement
             // wait the wehook to comfirm it 
 
             var payment = new Payment(bookingId, userId, booking.TotalPrice,Domain.Models.Enum.PaymentMethod.Card);
-            payment.MarkAsSuccess(session.Id);
-            await _unitofWork.Payments.AddAsync(payment);
+          //await _unitofWork.Payments.AddAsync(payment);
             await _unitofWork.CompleteAsync();
             //5- Return session URL or ID and this the goool of this method
 
@@ -187,7 +195,7 @@ namespace Application.Interfaces.Services.Implement
             // get the booking id from metadat
             var bookingId = int.Parse(session.Metadata["BookingId"]);
 
-            var payment = await _unitofWork.Payments.GetByIdAsync(bookingId); 
+            var payment = await _unitofWork.Payments.GetByTransactionIdAsync(session.Id); 
             if (payment==null)
                 throw new KeyNotFoundException("Payment record not found for this session.");
             //using the MarkAsSuccess

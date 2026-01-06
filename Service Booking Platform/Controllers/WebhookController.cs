@@ -1,43 +1,50 @@
-﻿using Application.DTOs.Payment;
-using Application.Interfaces.Services.IPaymentService;
+﻿using Application.Interfaces.Services.IPaymentService;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 [Route("api/[controller]")]
 [ApiController]
 public class WebhookController : ControllerBase
 {
     private readonly IPaymentService _paymentService;
+    private readonly IConfiguration _config;
 
-    public WebhookController(IPaymentService paymentService)
+    public WebhookController(IPaymentService paymentService, IConfiguration config)
     {
         _paymentService = paymentService;
+        _config = config;
     }
 
-    [HttpPost("stripe-success")] 
-    public async Task<IActionResult> MarkAsSuccess([FromBody] PaymentUpdateStatusDto dto)
+    [HttpPost]
+    public async Task<IActionResult> Index()
     {
-        // 1. استدعاء الميثود مباشرة
-        // 2. الـ Service ستتأكد من وجود الدفعة وتحديث الحجز
-        // 3. لو الدفعة مش موجودة، الـ Middleware سيرد بـ 404
-        await _paymentService.MarkAsSuccessAsync(dto);
+        // 1. read the request body from Stripe
+        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
-        // 4. دائماً نرجع رد JSON منظم
-        return Ok(new
+        try
         {
-            Message = "Payment confirmed and booking completed successfully.",
-            Timestamp = DateTime.UtcNow
-        });
-    }
+            // 2. check the event's signature to verify it's from Stripe 
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                _config["Stripe:WebhookSecret"]
+            );
 
-    [HttpPost("stripe-failed")]
-    public async Task<IActionResult> MarkAsFailed([FromBody] PaymentUpdateStatusDto dto)
-    {
-        await _paymentService.MarkAsFailedAsync(dto);
+            // 3.  filter the event type we care about  , like payment success  
+            if (stripeEvent.Type == "checkout.session.completed")
+            {
+                
+                if (stripeEvent.Data.Object is Stripe.Checkout.Session session)
+                {
+                    await _paymentService.HandlePaymentSuccessAsync(session.Id);
+                }
+            }
 
-        return Ok(new
+            return Ok(); 
+        }
+        catch (StripeException)
         {
-            Message = "Payment failure recorded.",
-            Timestamp = DateTime.UtcNow
-        });
+            return BadRequest(); 
+        }
     }
 }

@@ -19,6 +19,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ServiceBooking.Api.Middlewares;
 using System.Text;
+using Stripe;
+using Application.Interfaces.Services.IUserIdentityServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,10 +70,18 @@ builder.Services.AddScoped<IUnitofWork, UnitOfwork>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
-builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IFileService, Infrastructure.Services.FileService>();
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
+builder.Services.AddScoped<ITokenService,Application.Interfaces.Services.Implement.TokenService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserIdentityService, UserIdentityService>();
+// Stripe Configuration
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+// CORS Policy 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+});
 
 //  Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -125,6 +135,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseStaticFiles();
+// CORS Policy 
+app.UseCors("AllowAll");
+
 
 app.UseHttpsRedirection();
 

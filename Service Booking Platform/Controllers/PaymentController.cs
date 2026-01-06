@@ -52,4 +52,17 @@ public class PaymentController : ControllerBase
         await _paymentService.RefundAsync(paymentId);
         return Ok(new { Message = "Refund processed successfully." });
     }
+
+    [HttpPost("create-checkout-session/{bookingId}")]
+    [Authorize]
+    public async Task<IActionResult> CreateCheckoutSession(int bookingId)
+    {
+        var userid =  User.FindFirstValue(ClaimTypes.NameIdentifier);
+        // 1. نادي ميثود السيرفيس اللي بتكلم Stripe
+        // تأكد إن IPaymentService فيها ميثود بترجع الـ URL
+        var sessionUrl = await _paymentService.CreateCheckoutSessionAsync(bookingId, userid);
+
+        // 2. رجع الـ URL عشان الـ Frontend (أو Postman) يفتحه
+        return Ok(new { url = sessionUrl });
+    }
 }

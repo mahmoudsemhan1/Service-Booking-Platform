@@ -1,10 +1,12 @@
 ﻿using Application.DTOs.Booking;
 using Application.Interfaces.Services.BookingService;
+using Application.Interfaces.Services.IUserIdentityServices;
 using AutoMapper;
 using Domain.Constants;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
 using Domain.Models.Enum;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Application.Interfaces.Services.Implement
@@ -13,47 +15,51 @@ namespace Application.Interfaces.Services.Implement
     {
         private readonly IUnitofWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public BookingService(IUnitofWork unitofWork, IMapper mapper)
+        private readonly IUserIdentityService _userIdentityService;
+        public BookingService(IUnitofWork unitofWork, IMapper mapper, IUserIdentityService userIdentityService)
         {
             _unitOfWork = unitofWork;
             _mapper = mapper;
+            _userIdentityService = userIdentityService;
         }
 
-        public async Task<bool> ConfirmAsync(int bookingId , string providerUserId)
+        public async Task<bool> ConfirmAsync(int bookingId, string providerUserId)
         {
             var booking = await _unitOfWork.Bookings.GetByIdWithDetailsAsync(bookingId);
-            if (booking == null || booking.Status != BookingStatus.Pending)
-                return false;
-
-            if (booking.Status != BookingStatus.Pending) return false;
+            if (booking == null) return false;
 
             booking.Confirm();
-            booking.Payment = new Payment(booking.Id, booking.UserId, booking.TotalPrice, PaymentMethod.Unknown);
 
-            
+            if (booking.Payment == null)
+            {
+                booking.Payment = new Payment(booking.Id, booking.UserId, booking.TotalPrice, PaymentMethod.Unknown);
+            }
 
-            await _unitOfWork.CompleteAsync();
+              await _unitOfWork.Bookings.UpdateAsync(booking);
+
+            //
+            var result = await _unitOfWork.CompleteAsync();
+
             return true;
 
         }
 
-        public async Task<bool> CancelAsync(int bookingId,string userId, string userRole)
+        public async Task<bool> CancelAsync(int bookingId, string userId, string userRole)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
             if (booking == null) return false;
 
             //ownership check
             bool isOwner = booking.UserId == userId;
-            bool isProvider = booking.ProviderId.ToString() == userId; 
+            bool isProvider = booking.ProviderId.ToString() == userId;
             bool isAdmin = userRole == AppRoles.Admin;
-            if(!isOwner && !isProvider && !isAdmin) 
+            if (!isOwner && !isProvider && !isAdmin)
                 throw new InvalidOperationException("Cannot cancel a confirmed booking. Please contact the provider.");
 
-          
+
 
             booking.Cancel();
-            await _unitOfWork.CompleteAsync(); 
+            await _unitOfWork.CompleteAsync();
             return true;
         }
 
@@ -99,46 +105,74 @@ namespace Application.Interfaces.Services.Implement
 
         public async Task<BookingReadDto> CreateAsync(BookingCreateDto dto, string currentUserId)
         {
+            // 1. التحقق من توافر الخدمة والمزود (Logic السابق سليم)
             var providerService = (await _unitOfWork.ProviderServices.FindAsync(ps =>
-            ps.ProviderId == dto.ProviderId &&
-            ps.ServiceId == dto.ServiceId &&
-            !ps.IsDeleted
+                ps.ProviderId == dto.ProviderId &&
+                ps.ServiceId == dto.ServiceId &&
+                !ps.IsDeleted
             )).FirstOrDefault();
-            if (providerService != null)
-            {
-                throw new Exception("This provider does not currently offer this service   ");
-            }
-            var provider = await _unitOfWork.Providers.GetByIdAsync(dto.ProviderId);
-            if (provider != null && provider.UserId == currentUserId)
-                throw new InvalidOperationException("Providers cannot book their own services.");
 
+            if (providerService == null)
+                throw new Exception("This provider does not currently offer this service.");
 
-         var isSlotOccupied = (await _unitOfWork.Bookings.FindAsync(b =>
-                 b.ProviderId == dto.ProviderId &&
-                 b.BookingDate.Date == dto.BookingDate.Date &&
-                 b.BookingTime == dto.BookingTime &&
-                 b.Status != BookingStatus.Cancelled)).Any();
-            if (isSlotOccupied)
-                throw new InvalidOperationException("The selected time slot is already booked. Please choose another time.");
-
+            // 2. إنشاء كائن الحجز
             var booking = new Booking(currentUserId, dto.ServiceId, dto.ProviderId)
             {
                 BookingDate = dto.BookingDate,
                 BookingTime = dto.BookingTime,
-                // Price snapshot (fixing the price at the time of booking) to ensure it is not affected by subsequent price changes.
                 TotalPrice = providerService.DiscountedPrice ?? providerService.Price,
                 CreatedAt = DateTime.UtcNow
             };
 
+            // 3. الحفظ في قاعدة البيانات
+            try
+            {
+                await _unitOfWork.Bookings.AddAsync(booking);
+                var result = await _unitOfWork.CompleteAsync();
+                // ... الباقي
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // ده هيطلعلك السبب التقني (مثلاً Foreign Key Conflict)
+                var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+                throw new Exception($"Database Detail: {innerMessage}");
+            }
+            // هنا ممكن يحصل Error لو فيه Database Constraint (زي ForeignKey غلط)
 
-            await _unitOfWork.Bookings.AddAsync(booking);
-            var result = await _unitOfWork.CompleteAsync();
-            if (result <= 0) throw new Exception("An error occurred while saving the booking.");
+            // التحقق من الحفظ
+            //if (result <= 0)
+            //{
+            //    // بدل الـ Exception العام، هنحاول نعرف ليه مفيش داتا اتحفظت
+            //    throw new Exception("Database Save Failed: No rows were affected. Check constraints or Database connection.");
+            //}
 
-            var createdBooking = await _unitOfWork.Bookings.GetByIdWithDetailsAsync(booking.Id);
-            return _mapper.Map<BookingReadDto>(createdBooking);
+            // 4. جلب البيانات بالـ Includes
+            // تأكد إن الميثود دي في الـ Repository مش بترجع null
+            var resultWithDetails = await _unitOfWork.Bookings.GetByIdWithDetailsAsync(booking.Id);
 
+            if (resultWithDetails == null)
+            {
+                throw new Exception($"Booking {booking.Id} saved, but could not be re-loaded from database.");
+            }
 
+            // 5. الـ Mapping والـ User Identity
+            var bookingReadDto = _mapper.Map<BookingReadDto>(resultWithDetails);
+
+            try
+            {
+                // استخدمنا try-catch هنا عشان لو خدمة اليوزر وقعت، الحجز ميفشلش كله
+                if (_userIdentityService != null)
+                {
+                    bookingReadDto.UserName = await _userIdentityService.GetUserNameAsync(currentUserId);
+                }
+            }
+            catch (Exception )
+            {
+                // سجل الخطأ لكن كمل العملية
+                bookingReadDto.UserName = "User Name Unavailable";
+            }
+
+            return bookingReadDto;
         }
 
         public async Task<BookingReadDto> UpdateAsync(int bookingId, BookingUpdateDto dto)
@@ -153,7 +187,7 @@ namespace Application.Interfaces.Services.Implement
 
         }
 
-        public async Task DeleteAsync(int bookingId , string userId, string userRole)
+        public async Task DeleteAsync(int bookingId, string userId, string userRole)
         {
 
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);

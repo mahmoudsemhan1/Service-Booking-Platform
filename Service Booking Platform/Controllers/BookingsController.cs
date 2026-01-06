@@ -80,13 +80,23 @@ namespace Service_Booking_Platform.Controllers
         public async Task<IActionResult> Confirm(int id)
         {
             var providerUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (string.IsNullOrEmpty(providerUserId)) return Unauthorized();
 
+            try
+            {
                 var success = await _bookingService.ConfirmAsync(id, providerUserId);
-                return success ? NoContent() : BadRequest(new { message = "Booking cannot be confirmed." });
-      
-           
+
+                if (!success)
+                    return BadRequest(new { message = "Booking not found or already confirmed." });
+
+                return NoContent();
+            }
+            catch (Exception )
+            {
+                // ده هيخلي الميدل وير يرجع الرسالة اللي في الـ Domain (زي: Cannot confirm. Current status is...)
+                throw;
+            }
+
         }
 
         [HttpPost("{id}/cancel")]

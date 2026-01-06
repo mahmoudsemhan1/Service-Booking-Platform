@@ -21,10 +21,12 @@ namespace Application.Mappings
         {
             //Booking 
             CreateMap<Booking, BookingReadDto>()
-                       .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service != null ? src.Service.Title : null))
-                       .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.Provider != null ? src.Provider.BusinessName : null));
+                    .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service != null ? src.Service.Title : "N/A"))
+                    .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.Provider != null ? src.Provider.BusinessName : "N/A"))
+                      .ForMember(dest => dest.UserName, opt => opt.Ignore());
 
             CreateMap<BookingCreateDto, Booking>();
+
             CreateMap<BookingUpdateDto, Booking>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 

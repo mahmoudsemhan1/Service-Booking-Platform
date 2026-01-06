@@ -31,7 +31,7 @@ namespace Domain.Models
             UserId = userId;
             Amount = amount;
           Status = PaymentStatus.Pending;
-            method = Method;
+            Method = method ;
         }
 
 
