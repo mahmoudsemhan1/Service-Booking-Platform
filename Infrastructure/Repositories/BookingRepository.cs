@@ -55,7 +55,6 @@ namespace Infrastructure.Repositories
         public async Task<Booking?> GetByIdWithDetailsAsync(int id)
         {
           return await _context.Bookings
-                .AsNoTracking()
                 .Include(b=> b.Service)
                 .Include(b=> b.Provider)
                 .Include(b=>b.Payment)

@@ -1,14 +1,9 @@
 ﻿using Domain.Models.Base;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Domain.Models
 {
-    public class Provider : AuditableEntity
+    public class Provider : RatableEntity
     {
-        // استخدام private set لتحقيق الـ Encapsulation
         public int Id { get; private set; }
         public string UserId { get; private set; } = null!;
         public string BusinessName { get; private set; } = null!;
@@ -54,7 +49,7 @@ namespace Domain.Models
             OpenTime = openTime;
             CloseTime = closeTime;
 
-      
+
         }
         public void ToggleStatus()
         {

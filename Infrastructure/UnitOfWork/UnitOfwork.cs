@@ -64,8 +64,12 @@ namespace Infrastructure.UnitOfWork
 
         public async Task RollbackTransactionAsync()
         {
-            await _currentTransaction.RollbackAsync();
-            _currentTransaction?.Dispose();
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.RollbackAsync();
+                _currentTransaction.Dispose();
+                _currentTransaction = null;
+            }
         }
         public void Dispose()
         {

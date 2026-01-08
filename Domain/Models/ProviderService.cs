@@ -13,7 +13,7 @@ public class ProviderService : AuditableEntity
     public decimal Price { get; private set; }
     public decimal? DiscountedPrice { get; private set; }
 
-    
+
     private ProviderService() { }
 
     public ProviderService(int serviceId, decimal price, decimal? discountedPrice = null)

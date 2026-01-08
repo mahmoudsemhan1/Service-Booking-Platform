@@ -1,21 +1,16 @@
 ﻿using Domain.Models.Base;
 using Domain.Models.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Models
 {
-    public class Booking:AuditableEntity
+    public class Booking : AuditableEntity
     {
         public int Id { get; set; }
         public int ServiceId { get; private set; }
         public int ProviderId { get; private set; }
         public string UserId { get; private set; } = null!;//FK 
-        
-        public BookingStatus Status { get; private set; }=BookingStatus.Pending;
+
+        public BookingStatus Status { get; private set; } = BookingStatus.Pending;
         private Booking() { } // EF Core
 
         public Booking(string userId, int serviceId, int providerId)

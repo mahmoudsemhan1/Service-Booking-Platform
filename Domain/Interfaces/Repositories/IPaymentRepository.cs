@@ -1,9 +1,8 @@
-﻿using System;
-using Domain.Models;
+﻿using Domain.Models;
 
 namespace Domain.Interfaces.Repositories
 {
-    public interface IPaymentRepository :IGenericRepository<Payment>
+    public interface IPaymentRepository : IGenericRepository<Payment>
     {
         Task<Payment?> GetByTransactionIdAsync(string transactionId);
 

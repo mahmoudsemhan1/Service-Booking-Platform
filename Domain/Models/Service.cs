@@ -1,19 +1,18 @@
 ﻿using Domain.Models.Base;
-using System;
-using System.Collections.Generic;
 
 namespace Domain.Models
 {
-    public class Service : AuditableEntity
+    public class Service : RatableEntity
     {
         public int Id { get; private set; }
         public string Title { get; private set; } = null!;
         public string? Description { get; private set; }
-        public decimal? BasePrice { get; private set; } 
+        public decimal? BasePrice { get; private set; }
         public int? DurationMinutes { get; private set; }
 
         private readonly List<Image> _images = new();
         public IReadOnlyCollection<Image> Images => _images.AsReadOnly();
+        public ICollection<ProviderService> ProviderServices { get; private set; } = new List<ProviderService>();
 
         public void AddImage(string path, bool isPrimary = false)
         {
@@ -23,7 +22,7 @@ namespace Domain.Models
             {
                 foreach (var existingImage in _images)
                 {
-                    existingImage.UnmarkPrimary(); 
+                    existingImage.UnmarkPrimary();
                 }
             }
             _images.Add(new Image(path, isPrimary));
@@ -36,7 +35,6 @@ namespace Domain.Models
 
         }
         // Navigation properties
-        public ICollection<ProviderService> ProviderServices { get; private set; } = new List<ProviderService>();
 
         private Service() { } // EF Core
 
@@ -65,7 +63,7 @@ namespace Domain.Models
             if (description != null)
                 Description = description;
 
-           
+
         }
 
         public void AddProviderService(ProviderService providerService)

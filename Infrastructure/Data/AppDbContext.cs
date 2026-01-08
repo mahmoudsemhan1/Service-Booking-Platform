@@ -137,12 +137,28 @@ namespace Infrastructure.Data
                 .HasForeignKey<Payment>(p => p.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Review Relations 
             // Review -> Provider
             builder.Entity<Review>()
                 .HasOne(r => r.Provider)
                 .WithMany(p => p.Reviews)
                 .HasForeignKey(r => r.ProviderId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // Review with service 
+            builder.Entity<Review>()
+                .HasOne(r => r.Service)
+                .WithMany()
+                .HasForeignKey(r => r.ServiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+            // Review with Booking
+            builder.Entity<Review>()
+                .HasOne(r => r.Booking)
+                .WithMany()
+                .HasForeignKey(r => r.BookingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
 
             // =======================
             // Soft Delete Filters
@@ -159,6 +175,10 @@ namespace Infrastructure.Data
             // =======================
             // Precision Configurations
             // =======================
+            // Pricision for AverageRating
+            builder.Entity<Provider>()
+                    .Property(p => p.AverageRating)
+                    .HasPrecision(3, 2);
 
             builder.Entity<ProviderService>()
                 .Property(ps => ps.Price)
@@ -168,9 +188,15 @@ namespace Infrastructure.Data
                 .Property(ps => ps.DiscountedPrice)
                 .HasColumnType("decimal(18,2)");
 
+            //service Precision 
+            //1- for price
             builder.Entity<Service>()
                 .Property(s => s.BasePrice)
                 .HasColumnType("decimal(18,2)");
+            // for averageRating
+            builder.Entity<Service>()
+                .Property(s => s.AverageRating)
+                .HasPrecision(3, 2);
 
             builder.Entity<Booking>()
                 .Property(b => b.TotalPrice)

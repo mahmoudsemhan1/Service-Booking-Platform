@@ -1,8 +1,12 @@
-﻿using Application.Interfaces.Services.BookingService;
+﻿using Application.Common.Models;
+using Application.Interfaces.Services.BookingService;
+using Application.Interfaces.Services.IEmailService;
 using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.Implement;
 using Application.Interfaces.Services.IPaymentService;
+using Application.Interfaces.Services.IReviewServices;
 using Application.Interfaces.Services.IServices;
+using Application.Interfaces.Services.IUserIdentityServices;
 using Application.Interfaces.Services.TokenService;
 using Application.Mappings;
 using Domain.Interfaces.Repositories;
@@ -18,9 +22,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ServiceBooking.Api.Middlewares;
-using System.Text;
 using Stripe;
-using Application.Interfaces.Services.IUserIdentityServices;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +78,8 @@ builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<ITokenService,Application.Interfaces.Services.Implement.TokenService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserIdentityService, UserIdentityService>();
+builder.Services.AddScoped<Application.Interfaces.Services.IEmailService.IEmailService, EmailService>();
+builder.Services.AddScoped<IReviewService,Application.Interfaces.Services.Implement.ReviewService>();
 // Stripe Configuration
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 // CORS Policy 
@@ -82,7 +87,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 });
-
+// Email Settings Configuration 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 //  Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -126,6 +132,11 @@ builder.Services.AddAuthentication(options =>
 
 
 var app = builder.Build();
+app.Use((context, next) =>
+{
+    context.Request.EnableBuffering();
+    return next();
+});
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 // Configure the HTTP request pipeline.

@@ -34,7 +34,6 @@ namespace Infrastructure.Repositories
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
 
         }
         public async Task UpdateAsync(T entity)
@@ -63,6 +62,9 @@ namespace Infrastructure.Repositories
             return await _dbSet.FirstOrDefaultAsync(predicate);
         }
 
-
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().AnyAsync(predicate);
+        }
     }
 }
