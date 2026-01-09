@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Domain.Models.Views;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -187,6 +188,14 @@ namespace Infrastructure.Data
             builder.Entity<ProviderService>()
                 .Property(ps => ps.DiscountedPrice)
                 .HasColumnType("decimal(18,2)");
+            // ====================
+            // this for help for the database by using views 
+            //=================
+            builder.Entity<ProviderReviewView>(eb =>
+            {
+                eb.HasNoKey();
+                eb.ToView("vw_ProviderReviews"); // this the name of the view in databse
+            });
 
             //service Precision 
             //1- for price

@@ -5,7 +5,6 @@ namespace Domain.Interfaces.UnitofWork
 {
     public interface IUnitofWork : IDisposable
     {
-        IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Image> Images { get; }
 
         IGenericRepository<ProviderService> ProviderServices { get; }
@@ -15,6 +14,7 @@ namespace Domain.Interfaces.UnitofWork
 
         IProviderRepository Providers { get; }
         IServiceRepository Services { get; }
+        IReviewRepository Reviews { get; }
 
         Task<int> CompleteAsync();
         Task BeginTransactionAsync();

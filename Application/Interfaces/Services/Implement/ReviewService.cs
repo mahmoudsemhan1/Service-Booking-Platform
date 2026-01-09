@@ -1,9 +1,11 @@
 ﻿using Application.Common.Models;
 using Application.DTOs.Review;
 using Application.Interfaces.Services.IReviewServices;
+using AutoMapper;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
 using Domain.Models.Enum;
+using Domain.Models.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +17,12 @@ namespace Application.Interfaces.Services.Implement
     public class ReviewService : IReviewService
     {
         private readonly IUnitofWork  _unitofWork ;
+        private readonly IMapper _mapper;
 
-        public ReviewService(IUnitofWork unitofWork)
+        public ReviewService(IUnitofWork unitofWork, IMapper mapper)
         {
             _unitofWork = unitofWork;
+            _mapper = mapper;
         }
 
         public async Task<int> AddReviewAsync(string userId, CreateReviewDto dto)
@@ -85,6 +89,13 @@ namespace Application.Interfaces.Services.Implement
             }
 
             // 
+        }
+
+        public async Task<IEnumerable<ProviderReviewView>> GetProviderReviewsAsync(int providerId)
+        {
+            var reviews = await _unitofWork.Reviews.GetProviderReviewsAsync(providerId);
+            return reviews;
+
         }
     }
 }

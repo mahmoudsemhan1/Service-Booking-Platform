@@ -13,30 +13,23 @@ namespace Service_Booking_Platform.Controllers
     [ApiController]
     public class ReviewContoller : ControllerBase
     {
-        private readonly IUnitofWork _unitofwork;
         private readonly IReviewService _reviewService;
 
-        public ReviewContoller(IUnitofWork unitofwork, IReviewService reviewService)
+        public ReviewContoller(IReviewService reviewService)
         {
-            _unitofwork = unitofwork;
             _reviewService = reviewService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [Authorize]
+        [HttpGet("provider/{providerId}")]
+        public async Task<IActionResult> GetReviews(int providerId)
         {
-            var Rewvies = await _unitofwork.Reviews.GetAllAsync();
-            if (Rewvies == null)
-                return NotFound();
-            return Ok(Rewvies);
-        }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var Review = await _unitofwork.Reviews.GetByIdAsync(id);
-            if (Review == null)
-                return NotFound();
-            return Ok(Review);
+            var reviews = await _reviewService.GetProviderReviewsAsync(providerId);
+
+            if (reviews == null || !reviews.Any())
+                return Ok(new { message = "There are no reviews currently", data = reviews });
+
+            return Ok(reviews);
         }
         [Authorize]
         [HttpPost("add-review")]

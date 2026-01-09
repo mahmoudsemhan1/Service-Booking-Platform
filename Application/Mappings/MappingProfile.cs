@@ -2,6 +2,7 @@
 using Application.DTOs.Image;
 using Application.DTOs.Payment;
 using Application.DTOs.providerServiceDto;
+using Application.DTOs.Review;
 using Application.DTOs.Service;
 using AutoMapper;
 using Domain.Models;
@@ -71,7 +72,12 @@ namespace Application.Mappings
                     ? src.Service.Images.FirstOrDefault(img => img.IsPrimary)!.ImagePath
                     : null));
 
-   
+            //Review 
+            CreateMap<Review, ReadReviewDto>()
+            .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Booking!.Service!.Title))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt.ToString("yyyy-MM-dd")));
+
+
         }
 
 

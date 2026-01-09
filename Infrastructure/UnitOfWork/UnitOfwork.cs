@@ -17,18 +17,17 @@ namespace Infrastructure.UnitOfWork
 
             //Users = new GenericRepository<User>(_context);
             //Providers = new GenericRepository<Provider>(_context);
-            Reviews = new GenericRepository<Review>(_context);
             Images = new GenericRepository<Image>(_context);
             ProviderServices= new GenericRepository<ProviderService>(_context);
             Bookings = new BookingRepository(_context);
             Payments = new  PaymentRepository(_context);
             Services = new ServiceRepository(_context);
             Providers = new ProviderRepository(_context);
+            Reviews = new ReviewRepository(_context);
             UserProfiles = new GenericRepository<UserProfile>(_context);
 
         }
 
-        public IGenericRepository<Review> Reviews { get; }
         public IGenericRepository<Image> Images { get; }
         public IGenericRepository<ProviderService> ProviderServices { get; }
         public IBookingRepository Bookings { get; }
@@ -36,6 +35,7 @@ namespace Infrastructure.UnitOfWork
         public IServiceRepository Services { get; }
 
        public  IProviderRepository Providers { get; }
+        public IReviewRepository Reviews { get; }
 
         public IGenericRepository<UserProfile> UserProfiles { get; }
 
