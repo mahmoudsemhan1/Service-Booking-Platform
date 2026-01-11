@@ -1,12 +1,13 @@
 ﻿using Application.Common.Models;
 using Application.Interfaces.Services.BookingService;
-using Application.Interfaces.Services.IEmailService;
 using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.Implement;
 using Application.Interfaces.Services.IPaymentService;
+using Application.Interfaces.Services.IProviderSerivce;
 using Application.Interfaces.Services.IReviewServices;
 using Application.Interfaces.Services.IServices;
 using Application.Interfaces.Services.IUserIdentityServices;
+using Application.Interfaces.Services.IUserProfileService;
 using Application.Interfaces.Services.TokenService;
 using Application.Mappings;
 using Domain.Interfaces.Repositories;
@@ -73,13 +74,14 @@ builder.Services.AddScoped<IUnitofWork, UnitOfwork>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<IProviderAppService, ProviderAppService>();
 builder.Services.AddScoped<IFileService, Infrastructure.Services.FileService>();
-builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
-builder.Services.AddScoped<ITokenService,Application.Interfaces.Services.Implement.TokenService>();
+builder.Services.AddScoped<ITokenService, Application.Interfaces.Services.Implement.TokenService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserIdentityService, UserIdentityService>();
 builder.Services.AddScoped<Application.Interfaces.Services.IEmailService.IEmailService, EmailService>();
-builder.Services.AddScoped<IReviewService,Application.Interfaces.Services.Implement.ReviewService>();
+builder.Services.AddScoped<IReviewService, Application.Interfaces.Services.Implement.ReviewService>();
+builder.Services.AddScoped<IUserProfileService, UserProfilesService>();
 // Stripe Configuration
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 // CORS Policy 
@@ -105,7 +107,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddHttpContextAccessor();
 
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.AddAuthentication(options =>
 {

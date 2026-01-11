@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Mappings
 {
-    public class ImageUrlResolver : IValueResolver<Image, ImageReadDto, string>
+    public class ImageUrlResolver : IValueResolver<object, object, string>
     {
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -22,13 +22,25 @@ namespace Application.Mappings
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string Resolve(Image source, ImageReadDto destination, string destMember, ResolutionContext context)
+        public string Resolve(object source, object destination, string? destMember, ResolutionContext context)
         {
-            if (string.IsNullOrEmpty(source.ImagePath)) return null;
+            //git the relative path based on the source type
+            // if i wnat to support more types in the future i can just add more cases here
+            string? relativePath = source switch
+            {
+                UserProfile profile => profile.PhotoPath,
+                Domain.Models.Image serviceImage => serviceImage.ImagePath,
+                _ => null
+            };
 
+            if (string.IsNullOrEmpty(relativePath)) return null;
+            //get the request info to build the full URL
             var request = _httpContextAccessor.HttpContext.Request;
-            // بيجمع البروتوكول (http) + الدومين (localhost) + المسار
-            return $"{request.Scheme}://{request.Host}/{source.ImagePath.Replace("\\", "/")}";
+            var host = request.Host.Value;
+            var scheme = request.Scheme;
+
+            //build and return the full URL
+            return $"{scheme}://{host}/{relativePath.Replace("\\", "/")}";
         }
     }
 }

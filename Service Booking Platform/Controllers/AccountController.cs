@@ -68,11 +68,12 @@ namespace Service_Booking_Platform.Controllers
                 await _userManager.AddToRoleAsync(user, requestedRole);
 
                 var userProfile = new UserProfile
-                {
-                    UserId = user.Id,
-                    Bio = dto.bio ?? "Welcome to our platform!"
-                };
-                await _unitofWork.UserProfiles.AddAsync(userProfile);
+                    (
+                         user.Id,
+                         dto.bio ?? "Welcome to our platform!"
+                    );
+                    
+                         await _unitofWork.UserProfiles.AddAsync(userProfile);
 
                 if (requestedRole == AppRoles.Provider)
                 {
@@ -92,17 +93,17 @@ namespace Service_Booking_Platform.Controllers
                     IsSuccess: true
                 ));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // in case of any error, rollback the transaction
                 await _unitofWork.RollbackTransactionAsync();
-                 throw;
+                throw;
             }
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            
+
             var existingUser = await _userManager.FindByEmailAsync(loginDto.Email);
             if (existingUser == null || !await _userManager.CheckPasswordAsync(existingUser, loginDto.Password))
                 return Unauthorized("Invalid login attempt.");
@@ -150,7 +151,7 @@ namespace Service_Booking_Platform.Controllers
 
                 await _userManager.AddToRoleAsync(user, requestedRole);
 
-                var userProfile = new UserProfile { UserId = user.Id, Bio = dto.bio ?? "Created by Admin" };
+                var userProfile = new UserProfile ( user.Id,  dto.bio ?? "Created by Admin" );
                 await _unitofWork.UserProfiles.AddAsync(userProfile);
 
                 if (requestedRole == AppRoles.Provider)
@@ -162,7 +163,7 @@ namespace Service_Booking_Platform.Controllers
 
                 return Ok(new { message = $"Account with role '{requestedRole}' created successfully." });
             }
-            catch (Exception )
+            catch (Exception)
             {
                 await _unitofWork.RollbackTransactionAsync();
                 throw;
@@ -237,7 +238,7 @@ namespace Service_Booking_Platform.Controllers
                 return Ok(new { message = "User deleted successfully." });
 
             }
-            catch (Exception )
+            catch (Exception)
             {
                 await _unitofWork.RollbackTransactionAsync();
                 throw;
@@ -309,10 +310,10 @@ namespace Service_Booking_Platform.Controllers
 
                 // 3. إنشاء الـ UserProfile (التعديل اللي كان ناقص)
                 var userProfile = new UserProfile
-                {
-                    UserId = newUser.Id,
-                    Bio = "Signed up via Google"
-                };
+                (
+                    newUser.Id,
+                     "Signed up via Google"
+                );
                 await _unitofWork.UserProfiles.AddAsync(userProfile);
 
                 // تنفيذ كل العمليات في قاعدة البيانات
@@ -327,7 +328,7 @@ namespace Service_Booking_Platform.Controllers
                     IsSuccess: true
                 ));
             }
-            catch (Exception )
+            catch (Exception)
             {
                 await _unitofWork.RollbackTransactionAsync();
                 throw;

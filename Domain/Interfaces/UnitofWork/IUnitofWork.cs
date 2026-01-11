@@ -8,10 +8,9 @@ namespace Domain.Interfaces.UnitofWork
         IGenericRepository<Image> Images { get; }
 
         IGenericRepository<ProviderService> ProviderServices { get; }
-        IGenericRepository<UserProfile> UserProfiles { get; }
         IBookingRepository Bookings { get; }
         IPaymentRepository Payments { get; }
-
+        IUserProfileRepository UserProfiles { get; }
         IProviderRepository Providers { get; }
         IServiceRepository Services { get; }
         IReviewRepository Reviews { get; }

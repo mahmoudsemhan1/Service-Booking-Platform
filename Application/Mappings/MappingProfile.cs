@@ -4,6 +4,7 @@ using Application.DTOs.Payment;
 using Application.DTOs.providerServiceDto;
 using Application.DTOs.Review;
 using Application.DTOs.Service;
+using Application.DTOs.UserProfile;
 using AutoMapper;
 using Domain.Models;
 using Domain.Models.Enum;
@@ -76,6 +77,10 @@ namespace Application.Mappings
             CreateMap<Review, ReadReviewDto>()
             .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Booking!.Service!.Title))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt.ToString("yyyy-MM-dd")));
+            //userProfile
+            // في الـ UserProfile
+            CreateMap<UserProfile, UserProfileReadDto>()
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom<ImageUrlResolver>());
 
 
         }

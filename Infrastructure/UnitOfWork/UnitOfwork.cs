@@ -2,7 +2,9 @@
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.UnitOfWork
@@ -11,21 +13,22 @@ namespace Infrastructure.UnitOfWork
     {
         private readonly AppDbContext _context;
         private IDbContextTransaction? _currentTransaction;
-        public UnitOfwork(AppDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public UnitOfwork(AppDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
 
             //Users = new GenericRepository<User>(_context);
             //Providers = new GenericRepository<Provider>(_context);
             Images = new GenericRepository<Image>(_context);
-            ProviderServices= new GenericRepository<ProviderService>(_context);
+            ProviderServices = new GenericRepository<ProviderService>(_context);
             Bookings = new BookingRepository(_context);
-            Payments = new  PaymentRepository(_context);
+            Payments = new PaymentRepository(_context);
             Services = new ServiceRepository(_context);
             Providers = new ProviderRepository(_context);
             Reviews = new ReviewRepository(_context);
-            UserProfiles = new GenericRepository<UserProfile>(_context);
-
+            UserProfiles = new UserProfileRepository(_context, _userManager);
         }
 
         public IGenericRepository<Image> Images { get; }
@@ -33,11 +36,11 @@ namespace Infrastructure.UnitOfWork
         public IBookingRepository Bookings { get; }
         public IPaymentRepository Payments { get; }
         public IServiceRepository Services { get; }
-
-       public  IProviderRepository Providers { get; }
+        
+        public IUserProfileRepository UserProfiles { get; }
+        public  IProviderRepository Providers { get; }
         public IReviewRepository Reviews { get; }
 
-        public IGenericRepository<UserProfile> UserProfiles { get; }
 
         public async Task BeginTransactionAsync()
         {
