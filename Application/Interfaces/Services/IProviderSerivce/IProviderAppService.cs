@@ -1,4 +1,6 @@
-﻿using Application.DTOs.providerServiceDto;
+﻿using Application.DTOs.Booking;
+using Application.DTOs.Paged;
+using Application.DTOs.providerServiceDto;
 
 
 namespace Application.Interfaces.Services.IProviderSerivce
@@ -11,5 +13,7 @@ namespace Application.Interfaces.Services.IProviderSerivce
         Task UpdateBusinessInfoAsync(string userId, UpdateBusinessInfoDto dto);
         Task RemoveServiceAsync(string userId, int serviceId);
         Task ToggleProviderStatusAsync(string userId);
+
+        //
     }
 }

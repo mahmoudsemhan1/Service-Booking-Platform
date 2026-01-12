@@ -1,4 +1,6 @@
-﻿using Application.DTOs.Account;
+﻿using Application.Common.page;
+using Application.DTOs.Account;
+using Application.Interfaces.Services.IUserIdentityServices;
 using Application.Interfaces.Services.TokenService;
 using Domain.Constants;
 using Domain.Interfaces.UnitofWork;
@@ -7,6 +9,7 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System.Security.Claims;
 using static Application.DTOs.Account.Account;
 
@@ -20,18 +23,32 @@ namespace Service_Booking_Platform.Controllers
         private readonly ITokenService _tokenService;
         private readonly IUnitofWork _unitofWork;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserIdentityService _identityService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             ITokenService tokenService,
             IUnitofWork unitofWork,
             SignInManager<ApplicationUser> signInManager
-        )
+,
+            IUserIdentityService identityService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _unitofWork = unitofWork;
             _signInManager = signInManager;
+            _identityService = identityService;
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers([FromQuery] PaginationParams paging)
+        {
+            var result = await _identityService.GetAllUsersPagedAsync(paging);
+
+            if (result.TotalCount == 0)
+                return Ok(new { message = "No users found", data = result });
+
+            return Ok(result);
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
@@ -334,6 +351,8 @@ namespace Service_Booking_Platform.Controllers
                 throw;
             }
         }
+
+
 
 
 

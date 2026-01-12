@@ -1,4 +1,6 @@
-﻿using Application.DTOs.Service;
+﻿using Application.Common.page;
+using Application.DTOs.Paged;
+using Application.DTOs.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +17,7 @@ namespace Application.Interfaces.Services.IServices
         Task<ServiceReadDto> UpdateAsync(int id, ServiceUpdateDto dto,string userId);
         Task<bool> DeleteAsync(int id,string userId);
 
+        //this method for pagination and searching by title 
+        Task<PagedResultDto<ServiceReadDto>> GetPagedAsync(PaginationParams paging);
     }
 }

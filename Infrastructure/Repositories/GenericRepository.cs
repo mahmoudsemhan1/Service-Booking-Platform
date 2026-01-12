@@ -66,5 +66,33 @@ namespace Infrastructure.Repositories
         {
             return await _context.Set<T>().AnyAsync(predicate);
         }
+
+        //this spcific for pagination , add a method to get paged results
+
+        public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, Expression<Func<T, bool>>? predicate = null, string? includeProperties = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            // Apply filtering if a predicate is provided
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+            // Include related entities if specified
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty.Trim());
+                }
+            }
+            // Get total count before pagination
+            int totalCount = await query.CountAsync();
+            // Apply pagination
+            var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return (items, totalCount);
+
+        }
     }
 }

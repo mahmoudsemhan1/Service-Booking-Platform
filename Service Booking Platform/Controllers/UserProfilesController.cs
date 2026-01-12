@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Services.IUserProfileService;
+﻿using Application.DTOs.UserProfile;
+using Application.Interfaces.Services.IUserProfileService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,6 +19,7 @@ namespace Service_Booking_Platform.Controllers
             _userProfileService = userProfileService;
         }
 
+
         [HttpGet("Me")]
         public async Task<IActionResult> GetMyProfile()
         {
@@ -28,5 +30,18 @@ namespace Service_Booking_Platform.Controllers
             var profile = await _userProfileService.GetByUserIdAsync(userId);
             return Ok(profile);
         }
+
+        [HttpPut("update")]
+
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileDto   userProfileDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(userId == null)
+                return Unauthorized();
+
+            var updatedProfile = await _userProfileService.UpdateAsync(userId, userProfileDto);
+            return Ok(updatedProfile);
+        }
+
     }
 }

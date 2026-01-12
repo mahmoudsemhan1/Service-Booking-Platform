@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Review;
+﻿using Application.Common.page;
+using Application.DTOs.Review;
 using Application.Interfaces.Services.IReviewServices;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
@@ -20,15 +21,16 @@ namespace Service_Booking_Platform.Controllers
             _reviewService = reviewService;
         }
 
+       
         [Authorize]
         [HttpGet("provider/{providerId}")]
-        public async Task<IActionResult> GetReviews(int providerId)
+        public async Task<IActionResult> GetReviews(int providerId,[FromQuery] PaginationParams paging)
         {
-            var reviews = await _reviewService.GetProviderReviewsAsync(providerId);
-
-            if (reviews == null || !reviews.Any())
+            var reviews = await _reviewService.GetServiceReviewsAsync(providerId,paging);
+            if (reviews.TotalCount == 0)
+            {
                 return Ok(new { message = "There are no reviews currently", data = reviews });
-
+            }
             return Ok(reviews);
         }
         [Authorize]

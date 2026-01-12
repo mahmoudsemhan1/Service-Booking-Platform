@@ -1,4 +1,6 @@
-﻿using Application.DTOs.Booking;
+﻿using Application.Common.page;
+using Application.DTOs.Booking;
+using Application.DTOs.Paged;
 using Application.Interfaces.Services.BookingService;
 using Application.Interfaces.Services.IUserIdentityServices;
 using AutoMapper;
@@ -206,6 +208,27 @@ namespace Application.Interfaces.Services.Implement
 
 
 
+        }
+
+        //this method  for getting paged bookings for a specific user with pagination support
+        public async Task<PagedResultDto<BookingReadDto>> GetUserBookingsAsync(string userId, PaginationParams paging)
+        {
+            // Fetch paged bookings for the user 
+            var (items, totalCount) = await _unitOfWork.Bookings.GetPagedAsync(
+                                      paging.PageNumber,
+                                      paging.PageSize,
+                                      predicate: b => b.UserId == userId, // filter by userId
+                                      includeProperties: "Service" //this for  know the service name
+                                      
+                                  );
+            var dtos=  _mapper.Map<IEnumerable<BookingReadDto>>(items);
+            return new PagedResultDto<BookingReadDto>
+            {
+                Items = dtos,
+                TotalCount = totalCount,
+                PageNumber = paging.PageNumber,
+                PageSize = paging.PageSize
+            };
         }
     }
 }

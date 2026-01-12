@@ -1,9 +1,12 @@
-﻿using Application.DTOs.Service;
+﻿using Application.Common.page;
+using Application.DTOs.Paged;
+using Application.DTOs.Service;
 using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.IServices;
 using AutoMapper;
 using Domain.Interfaces.UnitofWork;
 using Domain.Models;
+using System.Linq.Expressions;
 namespace Application.Interfaces.Services.Implement
 {
     public class ServiceService : IServiceService
@@ -194,6 +197,33 @@ namespace Application.Interfaces.Services.Implement
 
         }
 
+        public async Task<PagedResultDto<ServiceReadDto>> GetPagedAsync(PaginationParams paging)
+        {
+            // if there is a search term , filter by title
+            Expression<Func<Service, bool>>? filter = null;
+            if (!string.IsNullOrWhiteSpace(paging.Search))
+            {
+                var search = paging.Search.Trim().ToLower();
+                filter = s => s.Title.ToLower().Contains(search) ||
+                              s.Description.ToLower().Contains(search);
+            }
 
+
+            // from the generic repository get the item and total count
+            var (items, totalCount) = await  _unitofWork.Services.GetPagedAsync(paging.PageNumber, paging.PageSize ,predicate: filter , includeProperties: "Images");
+
+            // map the items to dto
+            var dtos = _mapper.Map<IEnumerable<ServiceReadDto>>(items);
+
+            // create the paged result dto
+
+            return new PagedResultDto<ServiceReadDto>
+            {
+                Items = dtos,
+                TotalCount = totalCount,
+                PageNumber =paging.PageNumber ,
+                PageSize = paging.PageSize
+            };
+        }
     }
 }

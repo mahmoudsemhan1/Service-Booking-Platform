@@ -15,6 +15,15 @@ namespace Domain.Interfaces.Repositories
 
         Task<bool> ExistsAsync(int id);
 
+        // the following method is
+        // this spcific for pagination , add a method to get paged results
+        // Paged retrieval method  , includeProperties, predicate, pageNumber, pageSize 
+        Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(
+         int pageNumber,
+         int pageSize,
+         Expression<Func<T, bool>>? predicate = null,
+         string? includeProperties = null);
+
 
 
     }

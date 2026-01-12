@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Booking;
+﻿using Application.DTOs.Account;
+using Application.DTOs.Booking;
 using Application.DTOs.Image;
 using Application.DTOs.Payment;
 using Application.DTOs.providerServiceDto;
@@ -7,13 +8,6 @@ using Application.DTOs.Service;
 using Application.DTOs.UserProfile;
 using AutoMapper;
 using Domain.Models;
-using Domain.Models.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Application.DTOs.Account.Account;
 
 namespace Application.Mappings
 {
@@ -21,6 +15,8 @@ namespace Application.Mappings
     {
         public MappingProfile()
         {
+             
+
             //Booking 
             CreateMap<Booking, BookingReadDto>()
                     .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service != null ? src.Service.Title : "N/A"))
@@ -32,7 +28,7 @@ namespace Application.Mappings
             CreateMap<BookingUpdateDto, Booking>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-            
+
 
             // ===== Payment =====
 

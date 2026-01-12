@@ -1,4 +1,6 @@
-﻿using Application.DTOs.Booking;
+﻿using Application.Common.page;
+using Application.DTOs.Booking;
+using Application.DTOs.Paged;
 using Domain.Models.Enum;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,10 @@ namespace Application.Interfaces.Services.BookingService
 
         Task<BookingReadDto> CreateAsync(BookingCreateDto dto, string currentUserId);
         Task<BookingReadDto> UpdateAsync(int bookingId, BookingUpdateDto dto);
+
+
+        // New method to get paged bookings for a specific user , and support pagination
+        Task<PagedResultDto<BookingReadDto>> GetUserBookingsAsync(string userId, PaginationParams paging);
 
 
     }

@@ -1,4 +1,6 @@
 ﻿using Application.Common.Models;
+using Application.Common.page;
+using Application.DTOs.Paged;
 using Application.DTOs.Review;
 using Application.Interfaces.Services.IReviewServices;
 using AutoMapper;
@@ -16,7 +18,7 @@ namespace Application.Interfaces.Services.Implement
 {
     public class ReviewService : IReviewService
     {
-        private readonly IUnitofWork  _unitofWork ;
+        private readonly IUnitofWork _unitofWork;
         private readonly IMapper _mapper;
 
         public ReviewService(IUnitofWork unitofWork, IMapper mapper)
@@ -52,7 +54,7 @@ namespace Application.Interfaces.Services.Implement
             {
                 var review = new Review
                     (
-                    userId , 
+                    userId,
                     booking.ProviderId,
                     booking.ServiceId,
                     booking.Id,
@@ -62,7 +64,7 @@ namespace Application.Interfaces.Services.Implement
                 // the update will be in two models
                 // 1 the serivce update the rating  in it for this sercie
                 // 2 update in the provier , update the rating
-                
+
                 booking.Service.UpdateRating(dto.Rating);
                 booking.Provider.UpdateRating(dto.Rating);
 
@@ -70,7 +72,7 @@ namespace Application.Interfaces.Services.Implement
                 await _unitofWork.Reviews.AddAsync(review);
 
                 //
-                await _unitofWork.CommitTransactionAsync(); 
+                await _unitofWork.CommitTransactionAsync();
 
                 return review.Id;
 
@@ -96,6 +98,23 @@ namespace Application.Interfaces.Services.Implement
             var reviews = await _unitofWork.Reviews.GetProviderReviewsAsync(providerId);
             return reviews;
 
+        }
+
+        public async Task<PagedResultDto<ReadReviewDto>> GetServiceReviewsAsync(int serviceId, PaginationParams paging)
+        {
+            var (items, totalCount) = await _unitofWork.Bookings.GetPagedAsync(
+                                    paging.PageNumber,
+                                    paging.PageSize,
+                                    predicate: r => r.ServiceId == serviceId,
+                                    includeProperties: "Provider"
+                                                                  );
+            return new PagedResultDto<ReadReviewDto>
+                            {
+                Items = _mapper.Map<IEnumerable<ReadReviewDto>>(items),
+                TotalCount = totalCount,
+                PageNumber = paging.PageNumber,
+                PageSize = paging.PageSize
+            };
         }
     }
 }

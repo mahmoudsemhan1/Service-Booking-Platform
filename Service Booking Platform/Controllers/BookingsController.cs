@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Booking;
+﻿using Application.Common.page;
+using Application.DTOs.Booking;
 using Application.Interfaces.Services.BookingService;
 using Domain.Constants;
 using Domain.Interfaces.UnitofWork;
@@ -20,6 +21,18 @@ namespace Service_Booking_Platform.Controllers
             _bookingService = bookingService;
         }
 
+        [Authorize]
+        [HttpGet("my-bookings")]
+        public async Task<IActionResult> GetMyBookings([FromQuery] PaginationParams paging)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var result = await _bookingService.GetUserBookingsAsync(userId, paging);
+
+            return Ok(result);
+        }
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Provider)]
         [HttpGet("Filter")]
         public async Task<IActionResult> GetAll([FromQuery] BookingFilterDto filterDto)
         {

@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Service;
+﻿using Application.Common.page;
+using Application.DTOs.Service;
 using Application.Interfaces.Services.IfileService;
 using Application.Interfaces.Services.IServices;
 using AutoMapper.Configuration.Annotations;
@@ -22,10 +23,9 @@ namespace Service_Booking_Platform.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParams param)
         {
-            var services= await _serviceService.GetAllAsync();
-
+            var services= await _serviceService.GetPagedAsync(param);
             return Ok(services);
         }
         [AllowAnonymous]
