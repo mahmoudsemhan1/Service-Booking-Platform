@@ -1,5 +1,7 @@
 ﻿using Application.DTOs.Error;
+using FluentValidation; // تأكد من إضافة هذه الـ Namespace
 using System.Net;
+using System.Text.Json;
 
 namespace ServiceBooking.Api.Middlewares
 {
@@ -24,7 +26,7 @@ namespace ServiceBooking.Api.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
+                _logger.LogError(ex, "Unhandled Exception: {Message}", ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -34,23 +36,38 @@ namespace ServiceBooking.Api.Middlewares
             context.Response.ContentType = "application/json";
 
             var statusCode = (int)HttpStatusCode.InternalServerError;
-            var message = _env.IsDevelopment() ? ex.Message : "An unexpected error occurred on the server.";
-            // Map specific exceptions to HTTP Status Codes
+            var message = "An unexpected error occurred on the server.";
+
             switch (ex)
             {
+                // إضافة معالجة أخطاء الـ FluentValidation
+                case ValidationException validationEx:
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    // هنا نجمع كل رسائل الخطأ من الحقول المختلفة ونضعها في الـ Message
+                    message = string.Join(" | ", validationEx.Errors.Select(e => e.ErrorMessage));
+                    break;
+
                 case UnauthorizedAccessException:
                     statusCode = (int)HttpStatusCode.Forbidden;
                     message = "You do not have permission to access this resource.";
                     break;
+
                 case KeyNotFoundException:
                     statusCode = (int)HttpStatusCode.NotFound;
                     message = ex.Message;
                     break;
+
                 case InvalidOperationException:
+                case ArgumentException:
                     statusCode = (int)HttpStatusCode.BadRequest;
                     message = ex.Message;
                     break;
-                    // Add more custom exceptions here as needed
+            }
+
+            // في بيئة التطوير، نريد رؤية الخطأ الحقيقي إذا لم يكن خطأ Validation
+            if (_env.IsDevelopment() && ex is not ValidationException)
+            {
+                message = ex.Message;
             }
 
             context.Response.StatusCode = statusCode;
@@ -59,11 +76,13 @@ namespace ServiceBooking.Api.Middlewares
             {
                 StatusCode = statusCode,
                 Message = message,
-                // Include StackTrace only in Development environment for debugging
                 Trace = _env.IsDevelopment() ? ex.StackTrace : null
             };
 
-            await context.Response.WriteAsync(response.ToString());
+            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var json = JsonSerializer.Serialize(response, options);
+
+            await context.Response.WriteAsync(json);
         }
     }
 }

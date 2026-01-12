@@ -40,6 +40,7 @@ namespace Service_Booking_Platform.Controllers
             _identityService = identityService;
         }
 
+        [Authorize(Roles = AppRoles.SuperAdmin)]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers([FromQuery] PaginationParams paging)
         {

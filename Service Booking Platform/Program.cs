@@ -12,6 +12,8 @@ using Application.Interfaces.Services.TokenService;
 using Application.Mappings;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.UnitofWork;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Infrastructure.Repositories;
@@ -19,11 +21,13 @@ using Infrastructure.Services;
 using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ServiceBooking.Api.Middlewares;
 using Stripe;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,6 +86,31 @@ builder.Services.AddScoped<IUserIdentityService, UserIdentityService>();
 builder.Services.AddScoped<Application.Interfaces.Services.IEmailService.IEmailService, EmailService>();
 builder.Services.AddScoped<IReviewService, Application.Interfaces.Services.Implement.ReviewService>();
 builder.Services.AddScoped<IUserProfileService, UserProfilesService>();
+
+///
+// تخصيص ردود أخطاء الـ Model Validation لتتناسب مع FluentValidation
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        // استخراج الأخطاء من الـ ModelState
+        var errors = context.ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        // تحويلها لـ ValidationException يلقطه الـ Middleware
+        throw new FluentValidation.ValidationException(string.Join(" | ", errors));
+    };
+});
+
+// Fluent Validation
+// this line to enable automatic validation in ASP.NET Core
+builder.Services.AddFluentValidationAutoValidation();
+// this line to register all validators from the assembly where this code is located
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 // Stripe Configuration
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 // CORS Policy 
