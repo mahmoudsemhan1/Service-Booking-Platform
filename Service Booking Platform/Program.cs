@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using ServiceBooking.Api.Middlewares;
 using Stripe;
 using System.Reflection;
@@ -32,6 +33,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// replace default logger with serilog 
+// الربط مع appsettings.json
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -207,5 +213,17 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"An error occurred during seeding: {ex.Message}");
     }
 }
-
-app.Run();
+// we guarantee (نضمن) that the logs are flushed and resources are released before the application exits
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush(); // بتمسح الـ memory وتتأكد إن كل سطر اتكتب في الفايل
+}
