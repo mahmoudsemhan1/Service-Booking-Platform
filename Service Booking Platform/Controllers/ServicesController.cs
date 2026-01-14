@@ -33,6 +33,8 @@ namespace Service_Booking_Platform.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var srevice = await _serviceService.GetByIdAsync(id);
+            if (srevice == null)
+                return NotFound();
 
             return Ok(srevice); 
         }

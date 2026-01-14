@@ -1,7 +1,9 @@
 ﻿using Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ServiceBooking.UnitTests.IntegrationTests.Helpers
@@ -22,7 +24,9 @@ namespace ServiceBooking.UnitTests.IntegrationTests.Helpers
                 // هنشتغل ب dbcontext وهمي
                 services.AddDbContext<AppDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    options.UseInMemoryDatabase("InMemoryDbForTesting")
+                    // يطنش اي تحذير يخص ال transactions
+                    .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
                 });
                 var sp = services.BuildServiceProvider();
 
@@ -32,6 +36,14 @@ namespace ServiceBooking.UnitTests.IntegrationTests.Helpers
                     var db = scopedServices.GetRequiredService<AppDbContext>();
                     db.Database.EnsureCreated();
                 }
+                //علشان يفهم ال schema الوهميه اللي عملتها 
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "TestScheme";
+                    options.DefaultChallengeScheme = "TestScheme";
+                })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
+
             });
         }
     }
