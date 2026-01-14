@@ -227,3 +227,5 @@ finally
 {
     Log.CloseAndFlush(); // بتمسح الـ memory وتتأكد إن كل سطر اتكتب في الفايل
 }
+// for the Integration test
+public partial class Program { }

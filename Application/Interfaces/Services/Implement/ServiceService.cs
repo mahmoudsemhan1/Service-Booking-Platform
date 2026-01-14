@@ -14,6 +14,7 @@ namespace Application.Interfaces.Services.Implement
         private readonly IUnitofWork _unitofWork;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
+        private const string folderName = "services";
 
         public ServiceService(IUnitofWork unitofWork, IMapper mapper, IFileService fileService)
         {
@@ -38,9 +39,13 @@ namespace Application.Interfaces.Services.Implement
 
         public async Task<ServiceReadDto> CreateAsync(ServiceCreateDto dto, string userId)
         {
+
             var provider = (await _unitofWork.Providers.FindAsync(p => p.UserId == userId)).FirstOrDefault();
             if (provider == null) throw new Exception("Provider not found for the given user.");
 
+            //  thi check from the test 
+            if (dto.ImageFiles.Count != dto.IsPrimaryStatus.Count)
+                throw new ArgumentException("Mismatch: Images and status counts do not match.");
             // this for tracking the uploaded files in case of rollback
             var uploadefiles = new List<string>();
             await _unitofWork.BeginTransactionAsync();
@@ -56,7 +61,7 @@ namespace Application.Interfaces.Services.Implement
                         // apload each file and get the path , if any error occurs rollback the transaction and delete the uploaded files
                         var path = await _fileService.UploadFileAsync(dto.ImageFiles[i], "services");
 
-                        uploadefiles.Add(Path.Combine("services", path));
+                        uploadefiles.Add(Path.Combine(folderName, path));
 
 
                         // التأكد من وجود قيمة في قائمة الـ Boolean المقابلة، وإلا نعتبرها false
@@ -85,7 +90,7 @@ namespace Application.Interfaces.Services.Implement
                 // delete the uploaded files in case of error
                 foreach (var filePath in uploadefiles)
                 {
-                    _fileService.DeleteFile(filePath);
+                    _fileService.DeleteFile(Path.Combine(folderName, filePath));
                 }
                 throw;
             }
@@ -116,7 +121,7 @@ namespace Application.Interfaces.Services.Implement
                         if (image != null)
                         {
                             // add the file path to the list to delete from disk later, but dont delete it now in case of rollback 
-                            filesToDeleteFromDisk.Add(Path.Combine("services", image.ImagePath));
+                            filesToDeleteFromDisk.Add(Path.Combine(folderName, image.ImagePath));
                             service.RemoveImage(imageId);
                         }
                     }
@@ -128,7 +133,7 @@ namespace Application.Interfaces.Services.Implement
                     {
                         var path = await _fileService.UploadFileAsync(dto.NewImageFiles[i], "services");
                         // track the newly uploaded files to delete in case of rollback
-                        newlyUploadedFiles.Add(Path.Combine("services", path));
+                        newlyUploadedFiles.Add(Path.Combine(folderName, path));
                         bool isPrimary = dto.NewIsPrimaryStatus != null && dto.NewIsPrimaryStatus.Count > i
                                          ? dto.NewIsPrimaryStatus[i] : false;
 
@@ -141,7 +146,7 @@ namespace Application.Interfaces.Services.Implement
                 // now delete the files from disk that were marked for deletion
                 foreach (var filePath in filesToDeleteFromDisk)
                 {
-                    _fileService.DeleteFile(filePath);
+                    _fileService.DeleteFile(Path.Combine(folderName, filePath));
                 }
                 return _mapper.Map<ServiceReadDto>(service);
             }
@@ -170,7 +175,7 @@ namespace Application.Interfaces.Services.Implement
 
             if (service == null) throw new KeyNotFoundException("Service not found");
 
-            provider.RemoveService(id);
+
 
             //are there other providers using this service 
             // if no other providers use it , delete it from the services table
@@ -180,20 +185,32 @@ namespace Application.Interfaces.Services.Implement
             // then delete the service record 
 
             // make sure to save the changes to provider services first , then check for other providers 
-            var otherProviders = await _unitofWork.ProviderServices.FindAsync(ps => ps.ServiceId == id && ps.ProviderId !=provider.Id) ;
-            if (!otherProviders.Any())
+            await _unitofWork.BeginTransactionAsync();
+            try
             {
-                foreach (var image in service.Images)
+                provider.RemoveService(id);
+                var otherProviders = await _unitofWork.ProviderServices.FindAsync(ps => ps.ServiceId == id && ps.ProviderId != provider.Id);
+                if (!otherProviders.Any())
                 {
-                    var pathOnDisk = Path.Combine("services", image.ImagePath);
-                    _fileService.DeleteFile(pathOnDisk);
-                }
+                    foreach (var image in service.Images)
+                    {
+                        var pathOnDisk = Path.Combine(folderName, image.ImagePath);
+                        _fileService.DeleteFile(pathOnDisk);
+                    }
 
-                await _unitofWork.Services.DeleteAsync(service);
+                    await _unitofWork.Services.DeleteAsync(service);
+                }
+                await _unitofWork.CompleteAsync();
+                await _unitofWork.CommitTransactionAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                await _unitofWork.RollbackTransactionAsync();
+                throw;
             }
 
-            await _unitofWork.CompleteAsync();
-            return true;
+
 
         }
 
@@ -210,7 +227,7 @@ namespace Application.Interfaces.Services.Implement
 
 
             // from the generic repository get the item and total count
-            var (items, totalCount) = await  _unitofWork.Services.GetPagedAsync(paging.PageNumber, paging.PageSize ,predicate: filter , includeProperties: "Images");
+            var (items, totalCount) = await _unitofWork.Services.GetPagedAsync(paging.PageNumber, paging.PageSize, predicate: filter, includeProperties: "Images");
 
             // map the items to dto
             var dtos = _mapper.Map<IEnumerable<ServiceReadDto>>(items);
@@ -221,7 +238,7 @@ namespace Application.Interfaces.Services.Implement
             {
                 Items = dtos,
                 TotalCount = totalCount,
-                PageNumber =paging.PageNumber ,
+                PageNumber = paging.PageNumber,
                 PageSize = paging.PageSize
             };
         }

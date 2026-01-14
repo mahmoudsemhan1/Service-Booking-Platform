@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8 d17.14
+VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service Booking Platform", "Service Booking Platform\Service Booking Platform.csproj", "{453469B5-4D6E-4DBD-9262-0DC24683EF4E}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{A0D9B85D-4A6C-442F-9BE9-97951A4DD936}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{5E1DADAB-25F6-4F84-BC6D-9D57A91B4451}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBooking.UnitTests", "ServiceBooking.UnitTests\ServiceBooking.UnitTests.csproj", "{F9B43829-8A4F-48C3-98A0-BCB1AF2BE1E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5E1DADAB-25F6-4F84-BC6D-9D57A91B4451}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E1DADAB-25F6-4F84-BC6D-9D57A91B4451}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E1DADAB-25F6-4F84-BC6D-9D57A91B4451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9B43829-8A4F-48C3-98A0-BCB1AF2BE1E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9B43829-8A4F-48C3-98A0-BCB1AF2BE1E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9B43829-8A4F-48C3-98A0-BCB1AF2BE1E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9B43829-8A4F-48C3-98A0-BCB1AF2BE1E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
