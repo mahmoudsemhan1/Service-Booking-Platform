@@ -10,6 +10,9 @@ using System.Security.Claims;
 
 namespace Service_Booking_Platform.Controllers
 {
+    /// <summary>
+    /// Handles user reviews and ratings for service providers.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewContoller : ControllerBase
@@ -21,9 +24,17 @@ namespace Service_Booking_Platform.Controllers
             _reviewService = reviewService;
         }
 
-       
+
+        /// <summary>
+        /// Retrieves a paged list of reviews for a specific provider.
+        /// </summary>
+        /// <param name="providerId">The unique ID of the provider.</param>
+        /// <param name="paging">Pagination parameters (PageNumber, PageSize).</param>
+        /// <returns>A paged list of reviews including ratings and comments.</returns>
+        /// <response code="200">Returns the list of reviews.</response>
         [Authorize]
         [HttpGet("provider/{providerId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetReviews(int providerId,[FromQuery] PaginationParams paging)
         {
             var reviews = await _reviewService.GetServiceReviewsAsync(providerId,paging);
@@ -33,8 +44,23 @@ namespace Service_Booking_Platform.Controllers
             }
             return Ok(reviews);
         }
+        /// <summary>
+        /// Submits a new review for a completed service.
+        /// </summary>
+        /// <remarks>
+        /// Users can only review providers after a booking has been completed.
+        /// The rating should typically be between 1 and 5.
+        /// </remarks>
+        /// <param name="dto">The review data (Rating, Comment, ProviderId/BookingId).</param>
+        /// <returns>A success message and the ID of the created review.</returns>
+        /// <response code="200">Review submitted successfully.</response>
+        /// <response code="401">If the user is not authenticated.</response>
+        /// <response code="400">If the review data is invalid or doesn't meet business rules.</response>
         [Authorize]
         [HttpPost("add-review")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddReview(CreateReviewDto dto)
         {
             var userid =  User.FindFirstValue(ClaimTypes.NameIdentifier);

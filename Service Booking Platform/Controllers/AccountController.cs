@@ -15,6 +15,9 @@ using static Application.DTOs.Account.Account;
 
 namespace Service_Booking_Platform.Controllers
 {
+    /// <summary>
+    /// Manages user accounts, including registration, login, and external authentication (Google).
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -39,7 +42,13 @@ namespace Service_Booking_Platform.Controllers
             _signInManager = signInManager;
             _identityService = identityService;
         }
-
+        /// <summary>
+        /// Retrieves a paged list of all registered users.
+        /// </summary>
+        /// <param name="paging">Pagination parameters (PageNumber and PageSize).</param>
+        /// <returns>A paged list of users.</returns>
+        /// <response code="200">Returns the list of users.</response>
+        /// <response code="403">If the user is not a SuperAdmin.</response>
         [Authorize(Roles = AppRoles.SuperAdmin)]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers([FromQuery] PaginationParams paging)
@@ -51,6 +60,13 @@ namespace Service_Booking_Platform.Controllers
 
             return Ok(result);
         }
+        /// <summary>
+        /// Registers a new user or provider.
+        /// </summary>
+        /// <param name="dto">Registration details including role (User or Provider).</param>
+        /// <returns>Authentication token and success message.</returns>
+        /// <response code="200">Successful registration.</response>
+        /// <response code="400">If validation fails or role is invalid.</response>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -118,6 +134,12 @@ namespace Service_Booking_Platform.Controllers
                 throw;
             }
         }
+        /// <summary>
+        /// Authenticates a user and returns a JWT token.
+        /// </summary>
+        /// <param name="loginDto">Login credentials.</param>
+        /// <response code="200">Returns the JWT token.</response>
+        /// <response code="401">Invalid email or password.</response>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
@@ -132,8 +154,12 @@ namespace Service_Booking_Platform.Controllers
 
 
         }
-        [Authorize(Roles = "SuperAdmin")]
+        /// <summary>
+        /// Administrative tool to create a user with any role.
+        /// </summary>
+        [Authorize(Roles = AppRoles.SuperAdmin)]
         [HttpPost("create-user")]
+     
         public async Task<IActionResult> SuperCreateUser([FromBody] RegisterDto dto)
         {
 
@@ -187,7 +213,9 @@ namespace Service_Booking_Platform.Controllers
                 throw;
             }
         }
-
+        /// <summary>
+        /// Gets the profile information of the currently authenticated user.
+        /// </summary>
         [Authorize]
         [HttpGet("current-user")]
         public async Task<IActionResult> GetCurrentUser()
@@ -209,7 +237,9 @@ namespace Service_Booking_Platform.Controllers
                 Roles = roles
             });
         }
-
+        /// <summary>
+        /// Changes the password for the logged-in user.
+        /// </summary>
         [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
@@ -227,7 +257,10 @@ namespace Service_Booking_Platform.Controllers
             }
             return Ok(new { message = "Password changed successfully." });
         }
-
+        /// <summary>
+        /// Deletes a user and all associated data (Profile, Provider info).
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to delete.</param>
         [Authorize(Roles = "SuperAdmin")]
         [HttpDelete("delete-user/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
@@ -265,6 +298,9 @@ namespace Service_Booking_Platform.Controllers
         // Google Authentication Endpoints
 
         // 1. الميثود اللي بتبدأ الطلب
+        /// <summary>
+        /// Redirects the user to Google for external authentication.
+        /// </summary>
         [HttpGet("login-google")]
         public IActionResult LoginGoogle()
         {
@@ -274,7 +310,13 @@ namespace Service_Booking_Platform.Controllers
             return Challenge(properties, "Google");
         }
 
-        // 2. الميثود اللي بتستقبل بيانات جوجل
+        // 2. الميثود اللي بتستقبل بيانات جوجل'
+        /// <summary>
+        /// Callback endpoint for Google Authentication.
+        /// </summary>
+        /// <remarks>
+        /// If the user is new, an account is automatically created with the "User" role.
+        /// </remarks>
         [HttpGet("google-response")]
         public async Task<IActionResult> GoogleResponse()
         {

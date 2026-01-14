@@ -3,7 +3,13 @@ using Application.Interfaces.Services.IPaymentService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
-
+/// <summary>
+/// Handles incoming HTTP callbacks (Webhooks) from Stripe to process background events.
+/// </summary>
+/// <remarks>
+/// This controller does not require authentication because it is called externally by Stripe. 
+/// Security is maintained by verifying the 'Stripe-Signature' header using the Webhook Secret.
+/// </remarks>
 [Route("api/[controller]")]
 [ApiController]
 public class WebhookController : ControllerBase
@@ -18,8 +24,20 @@ public class WebhookController : ControllerBase
         _config = config;
         _emailService = emailService;
     }
+    /// <summary>
+    /// Receives and processes Stripe events (e.g., checkout.session.completed).
+    /// </summary>
+    /// <remarks>
+    /// When a payment is successful on Stripe's hosted page, Stripe sends a POST request here.
+    /// We verify the event, update the booking status in our database, and send a confirmation email.
+    /// </remarks>
+    /// <returns>A 200 OK status to acknowledge receipt of the event.</returns>
+    /// <response code="200">Event received and processed.</response>
+    /// <response code="400">If the signature verification fails or the request is invalid.</response>
     [AllowAnonymous]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Index()
     {
         // 1. read the request body from Stripe

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Service_Booking_Platform.Controllers
 {
+    /// <summary>
+    /// Manages personal user profile information, including bio and profile pictures.
+    /// </summary>
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -19,8 +22,15 @@ namespace Service_Booking_Platform.Controllers
             _userProfileService = userProfileService;
         }
 
-
+        /// <summary>
+        /// Retrieves the profile details of the currently authenticated user.
+        /// </summary>
+        /// <returns>The user's profile data.</returns>
+        /// <response code="200">Returns the user profile.</response>
+        /// <response code="401">If the user is not authenticated.</response>
         [HttpGet("Me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetMyProfile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -31,7 +41,20 @@ namespace Service_Booking_Platform.Controllers
             return Ok(profile);
         }
 
+        /// <summary>
+        /// Updates the authenticated user's profile information.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint accepts 'multipart/form-data'. 
+        /// Use this to update the bio or upload a new profile image.
+        /// </remarks>
+        /// <param name="userProfileDto">The profile update data (Bio, ProfileImage, etc.).</param>
+        /// <returns>The updated profile record.</returns>
+        /// <response code="200">Returns the updated profile.</response>
+        /// <response code="400">If the data provided is invalid.</response>
         [HttpPut("update")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
         public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileDto   userProfileDto)
         {
