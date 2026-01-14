@@ -69,3 +69,24 @@ git clone [https://github.com/mahmoudsemhan/service-booking-platform.git](https:
 
 # Navigate to the API project
 cd Service_Booking_Platform
+
+# Apply migrations and create the database
+dotnet ef database update
+
+# Run the application
+dotnet run
+
+
+Role,Description,Key Permissions
+SuperAdmin,System Owner,"Manage all users, assign roles, full data access."
+Admin,Platform Manager,"Monitor bookings, process refunds, manage services."
+Provider,Service Seller,"Update business info, set prices, complete bookings."
+User,Customer,"Browse services, create bookings, pay online, write reviews."
+
+
+
+
+📬 Contact
+Mahmoud Semhan * 📧 Email: mahmoudsemhan37@gmail.com
+
+🔗 LinkedIn: Mahmoud Semhan
